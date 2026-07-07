@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Vento · Tablero diario</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --vred:#C8000F;--vred-dim:#a30410;--vred-light:#fde8ea;
+      --vbg:#f5f5f3;--vbg2:#ffffff;--vbg3:#f0f0ee;
+      --vborder:#ddddd8;--vborder2:#c8c8c2;
+      --vtext:#1a1a1a;--vmuted:#666;--vdim:#999;
+      --radius:4px;--radius-lg:8px;
+      --fs-xs:13px;--fs-sm:15px;--fs-base:17px;--fs-md:19px;--fs-xl:27px;--fs-2xl:32px;--fs-hero:58px;
+    }
+    body{background:var(--vbg);color:var(--vtext);font-family:'Barlow',sans-serif;font-size:var(--fs-base);}
+    .dash{padding:1rem 0 2rem;max-width:1400px;margin:0 auto;padding-left:1rem;padding-right:1rem;}
+    .vheader{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--vborder);padding-bottom:1rem;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px;}
+    .vlogo{display:flex;align-items:center;gap:12px;}
+    .vlogo-mark{background:var(--vred);width:6px;height:40px;border-radius:2px;flex-shrink:0;}
+    .vlogo-text{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:var(--fs-xl);letter-spacing:0.04em;color:var(--vtext);line-height:1.1;}
+    .vlogo-sub{font-size:var(--fs-xs);font-weight:400;color:var(--vmuted);letter-spacing:0.06em;text-transform:uppercase;}
+    .header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .vdate{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);color:var(--vmuted);letter-spacing:0.05em;text-align:right;}
+    .agency-select-wrap{position:relative;}
+    .agency-select-wrap::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--vred);font-size:var(--fs-sm);pointer-events:none;}
+    select.agency-sel{appearance:none;-webkit-appearance:none;background:var(--vbg2);border:1px solid var(--vborder2);border-radius:var(--radius);color:var(--vtext);font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-md);font-weight:600;letter-spacing:0.04em;padding:7px 30px 7px 10px;cursor:pointer;min-width:220px;max-width:100%;}
+    select.agency-sel:focus{outline:none;border-color:var(--vred);}
+    .btn-action{display:flex;align-items:center;gap:7px;border:none;font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px 14px;border-radius:var(--radius);cursor:pointer;white-space:nowrap;}
+    .btn-action:active{transform:scale(0.97);}
+    .btn-screenshot{background:var(--vred);color:#fff;}
+    .btn-screenshot:hover{background:var(--vred-dim);}
+    .btn-screenshot.loading{opacity:0.7;pointer-events:none;}
+    .sec-label{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--vmuted);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+    .sec-label::after{content:'';flex:1;height:1px;background:var(--vborder);}
+    .mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem;}
+    @media(max-width:700px){.mgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media(max-width:380px){.mgrid{grid-template-columns:1fr;}}
+    .mcard{background:var(--vbg2);border:1px solid var(--vborder);border-radius:var(--radius-lg);padding:14px 12px;transition:border-color 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+    .mcard:hover{border-color:var(--vborder2);}
+    .mcard.editing{border-color:var(--vred);box-shadow:0 0 0 3px var(--vred-light);}
+    .mcard.readonly{border-style:dashed;}
+    .mcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+    .mcard-label{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--vmuted);}
+    .edit-icon{font-size:var(--fs-sm);color:var(--vdim);cursor:pointer;background:none;border:none;padding:2px 4px;}
+    .edit-icon:hover{color:var(--vred);}
+    .auto-badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:var(--vbg3);border:1px solid var(--vborder);color:var(--vmuted);padding:2px 7px;border-radius:3px;}
+    .auto-leads-badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:#fde8ea;border:1px solid #f5b8be;color:var(--vred);padding:2px 7px;border-radius:3px;}
+    .mcard-actual{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-2xl);font-weight:700;color:var(--vtext);line-height:1;margin-bottom:4px;}
+    .mcard-obj{font-size:var(--fs-sm);color:var(--vdim);margin-bottom:10px;}
+    .mcard-obj span{color:var(--vmuted);font-weight:500;}
+    .vbar-bg{height:4px;background:var(--vbg3);border-radius:2px;overflow:hidden;margin-bottom:6px;border:1px solid var(--vborder);}
+    .vbar-fill{height:100%;border-radius:2px;transition:width 0.4s ease;}
+    .bg-red{background:var(--vred);}
+    .bg-amber{background:#d97706;}
+    .bg-green{background:#16a34a;}
+    .pct-row{display:flex;justify-content:space-between;align-items:center;}
+    .pct-num{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-md);font-weight:700;}
+    .pct-hint{font-size:var(--fs-xs);color:var(--vdim);}
+    .c-red{color:var(--vred);}
+    .c-amber{color:#b45309;}
+    .c-green{color:#15803d;}
+    .vinput{width:100%;background:var(--vbg3);border:1px solid var(--vborder2);border-radius:var(--radius);color:var(--vtext);font-family:'Barlow',sans-serif;font-size:var(--fs-base);padding:6px 9px;margin-top:4px;}
+    .vinput:focus{outline:none;border-color:var(--vred);}
+    .vinput-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+    .vinput-label{font-size:var(--fs-xs);color:var(--vdim);letter-spacing:0.04em;margin-bottom:2px;text-transform:uppercase;font-weight:600;}
+    .fin-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;}
+    @media(max-width:650px){.fin-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media(max-width:400px){.fin-grid{grid-template-columns:1fr;}}
+    .fin-item{background:var(--vbg3);border:1px solid var(--vborder);border-radius:var(--radius);padding:10px;}
+    .fin-name{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-md);font-weight:700;letter-spacing:0.1em;color:var(--vred);margin-bottom:8px;}
+    .fin-field{display:flex;flex-direction:column;margin-bottom:6px;}
+    .fin-field:last-child{margin-bottom:0;}
+    .fin-field-label{font-size:var(--fs-xs);color:var(--vdim);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px;font-weight:600;}
+    .fin-field input{width:100%;background:var(--vbg2);border:1px solid var(--vborder2);border-radius:var(--radius);color:var(--vtext);font-family:'Barlow',sans-serif;font-size:var(--fs-base);padding:5px 7px;text-align:center;}
+    .fin-field input:focus{outline:none;border-color:var(--vred);}
+    .fin-totals{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--vborder);flex-wrap:wrap;gap:6px;}
+    .fin-total-label{font-size:var(--fs-sm);color:var(--vmuted);}
+    .fin-total-val{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-xl);font-weight:700;}
+    .vcard{background:var(--vbg2);border:1px solid var(--vborder);border-radius:var(--radius-lg);padding:1rem 1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+    .vtable-wrap{overflow-x:auto;margin-bottom:12px;}
+    .vtable{width:100%;border-collapse:collapse;min-width:400px;}
+    .vtable th{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--vmuted);text-align:left;padding:7px 8px;border-bottom:2px solid var(--vborder);}
+    .vtable td{padding:9px 8px;color:var(--vtext);border-bottom:1px solid var(--vbg3);font-size:var(--fs-base);vertical-align:middle;}
+    .vtable tr:last-child td{border-bottom:none;}
+    .vtable td input{width:68px;background:var(--vbg3);border:1px solid var(--vborder);border-radius:var(--radius);color:var(--vtext);font-size:var(--fs-base);padding:5px 6px;text-align:center;font-family:'Barlow',sans-serif;}
+    .vtable td input:focus{outline:none;border-color:var(--vred);}
+    .vtable tfoot td{border-top:2px solid var(--vborder);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:var(--fs-md);padding-top:10px;}
+    .badge{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;padding:3px 9px;border-radius:3px;letter-spacing:0.04em;}
+    .b-green{background:#dcfce7;color:#15803d;}
+    .b-amber{background:#fef3c7;color:#b45309;}
+    .b-red{background:#fee2e2;color:#b91c1c;}
+    .comentarios-wrap{margin-top:12px;}
+    .comentarios-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+    textarea.comentarios{width:100%;background:var(--vbg3);border:1px solid var(--vborder2);border-radius:var(--radius);color:var(--vtext);font-family:'Barlow',sans-serif;font-size:var(--fs-sm);padding:8px 10px;resize:none;height:80px;line-height:1.5;}
+    textarea.comentarios:focus{outline:none;border-color:var(--vred);}
+    textarea.comentarios::placeholder{color:var(--vdim);}
+    .traffic-meta{display:flex;flex-wrap:wrap;gap:1.5rem;margin:0.75rem 0 0.25rem;padding:0.5rem 0;border-top:1px solid var(--vbg3);}
+    .traffic-meta-item{display:flex;align-items:baseline;gap:8px;font-size:var(--fs-base);}
+    .traffic-meta-item .label{font-weight:500;color:var(--vmuted);}
+    .traffic-meta-item .value{font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-md);}
+    .traffic-meta-item .meta{font-size:var(--fs-sm);color:var(--vdim);}
+    .traffic-meta-item .ok{color:#16a34a;}
+    .traffic-meta-item .fail{color:var(--vred);}
+    .toast{position:fixed;bottom:20px;right:20px;background:var(--vbg2);border:1px solid var(--vred);color:var(--vtext);font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-base);font-weight:600;letter-spacing:0.05em;padding:10px 18px;border-radius:var(--radius);opacity:0;transform:translateY(10px);transition:all 0.25s;pointer-events:none;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
+    .toast.show{opacity:1;transform:translateY(0);}
+    @media(max-width:600px){
+      .dash{padding-left:0.5rem;padding-right:0.5rem;}
+      .vheader .vlogo-text{font-size:var(--fs-md);}
+      .vheader .vlogo-sub{font-size:11px;}
+      select.agency-sel{min-width:160px;font-size:var(--fs-sm);padding:5px 24px 5px 8px;}
+      .btn-action{font-size:var(--fs-xs);padding:6px 10px;}
+      .fin-grid{grid-template-columns:1fr 1fr;}
+      .vtable td input{width:56px;font-size:var(--fs-sm);}
+      .traffic-meta{gap:0.75rem;}
+      .traffic-meta-item{font-size:var(--fs-sm);}
+    }
+    @media(max-width:400px){
+      .fin-grid{grid-template-columns:1fr;}
+      .vtable{min-width:300px;}
+    }
+  </style>
+</head>
+<body>
+<div class="dash" id="dashboard">
+  <div class="vheader">
+    <div class="vlogo">
+      <div class="vlogo-mark"></div>
+      <div>
+        <div class="vlogo-text">VENTO / <span id="agency-name-display" style="color:var(--vmuted);font-weight:400;">44 Jiutepec Morelos</span></div>
+        <div class="vlogo-sub">Tablero de control diario</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="agency-select-wrap">
+        <select class="agency-sel" id="agency-sel" onchange="changeAgency(this.value)">
+          <optgroup label="── MORELOS ──">
+            <option value="103 Cuernavaca Sur">103 Cuernavaca Sur</option>
+            <option value="106 Emiliano Zapata">106 Emiliano Zapata</option>
+            <option value="124 Puente de Ixtla">124 Puente de Ixtla</option>
+            <option value="17 Cuautla">17 Cuautla</option>
+            <option value="173 Temixco">173 Temixco</option>
+            <option value="18 Cuernavaca">18 Cuernavaca</option>
+            <option value="202 Axochiapan">202 Axochiapan</option>
+            <option value="34 Yautepec">34 Yautepec</option>
+            <option value="44 Jiutepec Morelos" selected>44 Jiutepec Morelos</option>
+            <option value="95 Jojutla">95 Jojutla</option>
+            <option value="283 Yecapixtla">283 Yecapixtla</option>
+            <option value="248 Emiliano Zapata Centro">248 Emiliano Zapata Centro</option>
+          </optgroup>
+          <optgroup label="── CHALCO / ORIENTE ──">
+            <option value="121 Chalco-Cuautzingo">121 Chalco-Cuautzingo</option>
+            <option value="123 Chalco-Mixquic">123 Chalco-Mixquic</option>
+            <option value="147 Chalco-Solidaridad">147 Chalco-Solidaridad</option>
+            <option value="177 Amecameca">177 Amecameca</option>
+            <option value="205 Valle de Chalco Tezozómoc">205 Valle de Chalco Tezozómoc</option>
+            <option value="22 Valle de Chalco">22 Valle de Chalco</option>
+            <option value="25 Chalco">25 Chalco</option>
+            <option value="128 Ayotla">128 Ayotla</option>
+            <option value="185 Ixtapaluca">185 Ixtapaluca</option>
+            <option value="57 Chicoloapan">57 Chicoloapan</option>
+            <option value="162 Chiconcuac">162 Chiconcuac</option>
+            <option value="24 Texcoco">24 Texcoco</option>
+          </optgroup>
+          <optgroup label="── NEZA / CHIMALHUACÁN ──">
+            <option value="06 Ecatepec">06 Ecatepec</option>
+            <option value="07 Nezahualcóyotl">07 Nezahualcóyotl</option>
+            <option value="08 Chimalhuacán">08 Chimalhuacán</option>
+            <option value="112 Neza-Raúl Romero">112 Neza-Raúl Romero</option>
+            <option value="113 Maravillas">113 Maravillas</option>
+            <option value="137 Peñon">137 Peñon</option>
+            <option value="166 Los Reyes la Paz">166 Los Reyes la Paz</option>
+            <option value="40 Nezahualcoyotl Oriente">40 Nezahualcoyotl Oriente</option>
+            <option value="297 San Antonio Tecomitl">297 San Antonio Tecomitl</option>
+          </optgroup>
+          <optgroup label="── CDMX SUR / XOCHIMILCO ──">
+            <option value="01 Rojo Gomez">01 Rojo Gomez</option>
+            <option value="14 Tláhuac">14 Tláhuac</option>
+            <option value="156 San Andres Totoltepec">156 San Andres Totoltepec</option>
+            <option value="161 Santa Cecilia">161 Santa Cecilia</option>
+            <option value="23 Acatitla">23 Acatitla</option>
+            <option value="56 La Pastora">56 La Pastora</option>
+            <option value="65 Ermita">65 Ermita</option>
+            <option value="67 Xochimilco">67 Xochimilco</option>
+            <option value="75 Ermita Santa Cruz">75 Ermita Santa Cruz</option>
+            <option value="83 Centenario">83 Centenario</option>
+          </optgroup>
+          <optgroup label="── CDMX NORTE / CENTRO ──">
+            <option value="02 Insurgentes">02 Insurgentes</option>
+            <option value="03 Condesa">03 Condesa</option>
+            <option value="04 San Angel">04 San Angel</option>
+            <option value="107 Vasco de Quiroga">107 Vasco de Quiroga</option>
+            <option value="129 San Bernabe">129 San Bernabe</option>
+            <option value="13 La Villa">13 La Villa</option>
+            <option value="29 Oceania">29 Oceania</option>
+            <option value="82 Insurgentes Sur">82 Insurgentes Sur</option>
+            <option value="19001 POLANCO CMX">19001 POLANCO CMX</option>
+            <option value="19003 INSURGENTES CMX">19003 INSURGENTES CMX</option>
+            <option value="151 Casas Alemán">151 Casas Alemán</option>
+            <option value="235 Portal Centenario">235 Portal Centenario</option>
+            <option value="268 Picacho Ajusco">268 Picacho Ajusco</option>
+          </optgroup>
+          <optgroup label="── ACAPULCO / GUERRERO ──">
+            <option value="110 Acapulco Centro">110 Acapulco Centro</option>
+            <option value="104 Acapulco Cuauhtemoc">104 Acapulco Cuauhtemoc</option>
+            <option value="119 Patio Acapulco">119 Patio Acapulco</option>
+            <option value="127 Pie de la Cuesta">127 Pie de la Cuesta</option>
+            <option value="142 Iguala">142 Iguala</option>
+            <option value="157 Taxco">157 Taxco</option>
+            <option value="211 Acapulco Renacimiento">211 Acapulco Renacimiento</option>
+            <option value="233 Chilpancingo Centro">233 Chilpancingo Centro</option>
+            <option value="232 Chilpancingo Sur">232 Chilpancingo Sur</option>
+            <option value="231 Chilapa Guerrero">231 Chilapa Guerrero</option>
+            <option value="271 Tecpan">271 Tecpan</option>
+            <option value="277 Atoyac">277 Atoyac</option>
+            <option value="286 Teloloapan">286 Teloloapan</option>
+          </optgroup>
+          <optgroup label="── SURESTE ──">
+            <option value="288 Motul">288 Motul</option>
+            <option value="279 Playa del Carmen">279 Playa del Carmen</option>
+            <option value="244 Campeche Centro">244 Campeche Centro</option>
+            <option value="275 Chetumal">275 Chetumal</option>
+            <option value="243 Champoton">243 Champoton</option>
+          </optgroup>
+        </select>
+      </div>
+      <button class="btn-action btn-screenshot" id="btn-cap" onclick="takeScreenshot()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Capturar
+      </button>
+      <div class="vdate" id="vdate"></div>
+    </div>
+  </div>
+
+  <!-- Objetivos del día -->
+  <div class="sec-label">Objetivos del día</div>
+  <div class="mgrid" id="mgrid"></div>
+
+  <!-- Financieras colocadas -->
+  <div class="sec-label" style="margin-top:0.5rem;">Financieras colocadas</div>
+  <div style="background:var(--vbg2);border:1px solid var(--vborder);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+    <div class="fin-grid" id="fin-grid"></div>
+    <div class="fin-totals">
+      <div><div class="fin-total-label">Total colocado</div><div class="fin-total-val c-green" id="fin-actual-total">0</div></div>
+      <div style="text-align:center;"><div class="fin-total-label">Solicitudes totales</div><div class="fin-total-val" style="color:var(--vmuted);" id="fin-obj-total">0</div></div>
+      <div style="text-align:right;"><div class="fin-total-label">Alcance</div><div class="fin-total-val" id="fin-pct-total">—</div></div>
+    </div>
+    <div class="vbar-bg" style="margin-top:10px;height:5px;"><div class="vbar-fill bg-red" id="fin-bar" style="width:0%"></div></div>
+  </div>
+
+  <!-- Control de tráfico (protagonista) -->
+  <div class="vcard" style="margin-bottom:0.5rem;">
+    <div class="sec-label" style="margin-bottom:12px;">Control de tráfico</div>
+    <div class="vtable-wrap">
+      <table class="vtable">
+        <thead><tr><th>Fuente</th><th>Visitas</th><th>Leads</th><th>Conv.</th></tr></thead>
+        <tbody id="tbody"></tbody>
+        <tfoot><tr>
+          <td style="color:var(--vmuted);font-size:var(--fs-sm);font-weight:600;">Totales</td>
+          <td id="tfoot-visitas" style="font-weight:700;">0</td>
+          <td id="tfoot-leads" style="font-weight:700;color:var(--vred);">0</td>
+          <td id="tfoot-conv" style="font-weight:700;">0%</td>
+        </tr></tfoot>
+      </table>
+    </div>
+
+    <!-- Metas de tráfico -->
+    <div class="traffic-meta" id="traffic-meta">
+      <div class="traffic-meta-item"><span class="label">🎯 Interacciones (meta 60):</span><span class="value" id="meta-visitas">0</span><span class="meta" id="meta-visitas-status">❌</span></div>
+      <div class="traffic-meta-item"><span class="label">🎯 Leads (meta 12):</span><span class="value" id="meta-leads">0</span><span class="meta" id="meta-leads-status">❌</span></div>
+    </div>
+
+    <div class="comentarios-wrap">
+      <div class="sec-label" style="margin-top:14px;margin-bottom:6px;">Comentarios del día</div>
+      <div class="comentarios-header">
+        <span style="font-size:var(--fs-xs);color:var(--vmuted);">Información relevante</span>
+        <span style="font-size:var(--fs-xs);color:var(--vdim);" id="char-count">0 / 200</span>
+      </div>
+      <textarea class="comentarios" id="comentarios-txt" maxlength="200" placeholder="Ej: Visita de promotor Vento Credit, evento en plaza, clima afectó tráfico..." oninput="updateCharCount()"></textarea>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const TP_OBJ_FIJO = 28000;
+const d = new Date();
+document.getElementById('vdate').innerHTML = d.toLocaleDateString('es-MX', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
+
+// Métricas principales
+let metrics = [
+  {id:'ventas',   label:'Ventas totales',    obj:52225.80, actual:48371.93, type:'currency', editable:true},
+  {id:'unidades', label:'Unidades vendidas', obj:3,        actual:2,        type:'int',      editable:true},
+  {id:'leads',    label:'Leads generados',   obj:12,       actual:0,        type:'int',      editable:'obj-only'},
+  {id:'ticket',   label:'Ticket promedio',   obj:TP_OBJ_FIJO, actual:0,    type:'currency', editable:false},
+];
+let editingObj = null;
+
+// Financieras: solo VC, MK, FG (Otras → FG)
+let financieras = [
+  {nombre:'VC', obj:2, actual:1, rechazo:0},
+  {nombre:'MK', obj:1, actual:0, rechazo:0},
+  {nombre:'FG', obj:1, actual:0, rechazo:0},
+];
+
+// Fuentes de tráfico fijas
+const TRAFFIC_SOURCES = ['Tráfico','Llamada','Redes Sociales','Cambaceo','Estrategias adicionales'];
+let traffic = TRAFFIC_SOURCES.map(f => ({fuente:f, visitas:0, leads:0}));
+traffic[0].visitas = 6; traffic[0].leads = 2;
+
+// ─── utilidades ──────────────────────────────────────────────────────────────
+function fmtCur(v){ return '$'+Number(v).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmt(v,t){ return t==='currency' ? fmtCur(v) : Number(v).toLocaleString('es-MX'); }
+function pct(a,o){ if(!o || o==0) return 0; return Math.min(Math.round((a/o)*100),100); }
+function barCls(p){ return p>=80 ? 'bg-green' : p>=50 ? 'bg-amber' : 'bg-red'; }
+function cCls(p){ return p>=80 ? 'c-green' : p>=50 ? 'c-amber' : 'c-red'; }
+function bCls(p){ return p>=80 ? 'b-green' : p>=50 ? 'b-amber' : 'b-red'; }
+
+function changeAgency(val){ document.getElementById('agency-name-display').textContent = val; }
+
+// ─── cálculos internos ──────────────────────────────────────────────────────
+function calcTP(){
+  const ventas = metrics.find(m=>m.id==='ventas').actual;
+  const unidades = metrics.find(m=>m.id==='unidades').actual;
+  const tp = metrics.find(m=>m.id==='ticket');
+  tp.actual = (unidades > 0) ? ventas / unidades : 0;
+  tp.obj = TP_OBJ_FIJO;
+}
+
+function calcTrafficTotals(){
+  const totalVisitas = traffic.reduce((s,r) => s + r.visitas, 0);
+  const totalLeads = traffic.reduce((s,r) => s + r.leads, 0);
+  return { totalVisitas, totalLeads };
+}
+
+function calcLeads(){
+  const { totalLeads } = calcTrafficTotals();
+  metrics.find(m=>m.id==='leads').actual = totalLeads;
+  document.getElementById('tfoot-leads').textContent = totalLeads;
+}
+
+function updateTrafficMeta(){
+  const { totalVisitas, totalLeads } = calcTrafficTotals();
+  document.getElementById('meta-visitas').textContent = totalVisitas;
+  document.getElementById('meta-leads').textContent = totalLeads;
+  const vOk = totalVisitas >= 60;
+  const lOk = totalLeads >= 12;
+  document.getElementById('meta-visitas-status').textContent = vOk ? '✅' : '❌';
+  document.getElementById('meta-visitas-status').className = 'meta ' + (vOk ? 'ok' : 'fail');
+  document.getElementById('meta-leads-status').textContent = lOk ? '✅' : '❌';
+  document.getElementById('meta-leads-status').className = 'meta ' + (lOk ? 'ok' : 'fail');
+}
+
+// ─── render métricas ──────────────────────────────────────────────────────
+function renderMetrics(){
+  calcTP(); calcLeads();
+  const g = document.getElementById('mgrid'); g.innerHTML = '';
+  metrics.forEach((m,i)=>{
+    const p = pct(m.actual, m.obj);
+    const isEd = (editingObj === i && m.editable === true);
+    const isTP = (m.id === 'ticket');
+    const isLeads = (m.id === 'leads');
+    const div = document.createElement('div');
+    div.className = 'mcard' + (isEd ? ' editing' : '') + (isTP || isLeads ? ' readonly' : '');
+    let topRight = isTP ? `<span class="auto-badge">AUTO</span>` :
+                   isLeads ? `<span class="auto-leads-badge">∑ FUENTES</span>` :
+                   `<button class="edit-icon" onclick="toggleEdit(${i})">${isEd ? '✕' : '✎'}</button>`;
+    let inputArea = '';
+    if(isTP){
+      inputArea = `<div class="vinput-label" style="margin-bottom:4px;margin-top:4px;">Ventas ÷ Unidades</div><div style="font-size:var(--fs-xs);color:var(--vdim);padding:5px 0 6px;">Se calcula automáticamente</div>`;
+    } else if(isLeads){
+      inputArea = `<div class="vinput-label" style="margin-bottom:4px;margin-top:4px;">Objetivo diario</div><input class="vinput" type="number" value="${m.obj}" step="1" min="0" oninput="updateLeadsObj(this.value)" />`;
+    } else if(isEd){
+      inputArea = `<div class="vinput-row"><div><div class="vinput-label">Objetivo</div><input class="vinput" type="number" value="${m.obj}" step="${m.type==='currency'?'500':'1'}" min="0" oninput="updateObj(${i},this.value)" /></div><div><div class="vinput-label">Real</div><input class="vinput" type="number" value="${m.actual}" step="${m.type==='currency'?'100':'1'}" min="0" oninput="updateAct(${i},this.value)" /></div></div>`;
+    } else {
+      inputArea = `<div class="vinput-label" style="margin-bottom:4px;">Avance actual</div><input class="vinput" type="number" value="${m.actual}" step="${m.type==='currency'?'100':'1'}" min="0" oninput="updateAct(${i},this.value)" />`;
+    }
+    div.innerHTML = `<div class="mcard-top"><div class="mcard-label">${m.label}</div>${topRight}</div>
+      <div class="mcard-actual" id="actual-disp-${i}">${fmt(m.actual,m.type)}</div>
+      <div class="mcard-obj">Obj: <span id="obj-disp-${i}">${fmt(m.obj,m.type)}</span></div>
+      ${inputArea}
+      <div style="margin-top:10px;"><div class="vbar-bg"><div class="vbar-fill ${barCls(p)}" id="bar-${i}" style="width:${p}%"></div></div>
+      <div class="pct-row"><span class="pct-num ${cCls(p)}" id="pct-${i}">${p}%</span><span class="pct-hint">${m.actual>=m.obj ? '✓ Meta' : 'Falta: '+fmt(m.obj-m.actual,m.type)}</span></div></div>`;
+    g.appendChild(div);
+  });
+}
+
+function toggleEdit(i){ if(!metrics[i].editable || metrics[i].editable==='obj-only') return; editingObj = (editingObj===i) ? null : i; renderMetrics(); }
+function updateObj(i,v){ metrics[i].obj = parseFloat(v) || 0; updateGaugeFinancieras(); refreshCard(i); }
+function updateAct(i,v){ metrics[i].actual = parseFloat(v) || 0; calcTP(); refreshTPCard(); updateGaugeFinancieras(); refreshCard(i); }
+function updateLeadsObj(v){ metrics.find(m=>m.id==='leads').obj = parseInt(v) || 0; refreshLeadsCard(); updateGaugeFinancieras(); }
+
+function refreshCard(i){
+  const m = metrics[i]; const p = pct(m.actual, m.obj);
+  const bar = document.getElementById('bar-'+i); const pnum = document.getElementById('pct-'+i);
+  const act = document.getElementById('actual-disp-'+i); const obj = document.getElementById('obj-disp-'+i);
+  if(act) act.textContent = fmt(m.actual, m.type);
+  if(obj) obj.textContent = fmt(m.obj, m.type);
+  if(bar){ bar.style.width = p+'%'; bar.className = 'vbar-fill '+barCls(p); }
+  if(pnum){ pnum.textContent = p+'%'; pnum.className = 'pct-num '+cCls(p); }
+}
+function refreshTPCard(){ refreshCard(metrics.findIndex(m=>m.id==='ticket')); }
+function refreshLeadsCard(){ refreshCard(metrics.findIndex(m=>m.id==='leads')); }
+
+// ─── financieras ──────────────────────────────────────────────────────────
+function finTotalObj(){ return financieras.reduce((s,f) => s + f.obj, 0); }
+function finTotalAct(){ return financieras.reduce((s,f) => s + f.actual, 0); }
+
+function renderFinancieras(){
+  const g = document.getElementById('fin-grid'); g.innerHTML = '';
+  financieras.forEach((f,i)=>{
+    const div = document.createElement('div'); div.className = 'fin-item';
+    div.innerHTML = `<div class="fin-name">${f.nombre}</div>
+      <div class="fin-field"><div class="fin-field-label">Solicitudes</div><input type="number" value="${f.obj}" min="0" step="1" oninput="updateFin(${i},'obj',this.value)" /></div>
+      <div class="fin-field"><div class="fin-field-label">Colocación</div><input type="number" value="${f.actual}" min="0" step="1" oninput="updateFin(${i},'actual',this.value)" /></div>
+      <div class="fin-field"><div class="fin-field-label">Rechazo</div><input type="number" value="${f.rechazo}" min="0" step="1" oninput="updateFin(${i},'rechazo',this.value)" /></div>`;
+    g.appendChild(div);
+  });
+  updateFinTotals();
+}
+
+function updateFin(i, field, v){
+  financieras[i][field] = parseInt(v) || 0;
+  updateFinTotals();
+  updateGaugeFinancieras();
+}
+
+function updateFinTotals(){
+  const totalObj = finTotalObj();
+  const totalAct = finTotalAct();
+  const p = pct(totalAct, totalObj);
+  document.getElementById('fin-actual-total').textContent = totalAct;
+  document.getElementById('fin-obj-total').textContent = totalObj;
+  const pctEl = document.getElementById('fin-pct-total');
+  pctEl.textContent = p+'%';
+  pctEl.className = 'fin-total-val '+cCls(p);
+  const bar = document.getElementById('fin-bar');
+  bar.style.width = p+'%';
+  bar.className = 'vbar-fill '+barCls(p);
+}
+
+// ─── gauge financieras (solo el de la sección) ────────────────────────────
+function updateGaugeFinancieras(){
+  // solo actualiza la barra de financieras, que ya se actualiza en updateFinTotals
+  // pero llamamos de nuevo por si acaso
+  updateFinTotals();
+}
+
+// ─── tráfico ──────────────────────────────────────────────────────────────
+function renderTraffic(){
+  const b = document.getElementById('tbody'); b.innerHTML = '';
+  traffic.forEach((row,i)=>{
+    const cv = row.visitas > 0 ? Math.round((row.leads / row.visitas) * 100) : 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="font-weight:500;color:var(--vtext);">${row.fuente}</td>
+      <td><input type="number" value="${row.visitas}" min="0" onchange="updT(${i},'visitas',this.value)" /></td>
+      <td><input type="number" value="${row.leads}" min="0" onchange="updT(${i},'leads',this.value)" /></td>
+      <td><span class="badge ${bCls(cv)}" id="cv-${i}">${cv}%</span></td>`;
+    b.appendChild(tr);
+  });
+  updateTrafficTotalsUI();
+  calcLeads();
+  refreshLeadsCard();
+  updateTrafficMeta();
+}
+
+function updT(i, f, v){
+  traffic[i][f] = parseInt(v) || 0;
+  const cv = traffic[i].visitas > 0 ? Math.round((traffic[i].leads / traffic[i].visitas) * 100) : 0;
+  const el = document.getElementById('cv-'+i);
+  if(el){ el.textContent = cv+'%'; el.className = 'badge '+bCls(cv); }
+  updateTrafficTotalsUI();
+  calcLeads();
+  refreshLeadsCard();
+  updateTrafficMeta();
+}
+
+function updateTrafficTotalsUI(){
+  const { totalVisitas, totalLeads } = calcTrafficTotals();
+  document.getElementById('tfoot-visitas').textContent = totalVisitas;
+  document.getElementById('tfoot-leads').textContent = totalLeads;
+  const conv = totalVisitas > 0 ? Math.round((totalLeads / totalVisitas) * 100) : 0;
+  document.getElementById('tfoot-conv').textContent = conv + '%';
+}
+
+// ─── comentarios ──────────────────────────────────────────────────────────
+function updateCharCount(){
+  const txt = document.getElementById('comentarios-txt');
+  document.getElementById('char-count').textContent = txt.value.length + ' / 200';
+}
+
+// ─── screenshot ───────────────────────────────────────────────────────────
+function showToast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+function takeScreenshot(){
+  const btn = document.getElementById('btn-cap'); btn.classList.add('loading'); btn.textContent = 'Capturando...';
+  setTimeout(()=>{
+    html2canvas(document.getElementById('dashboard'), {backgroundColor:'#f5f5f3', scale:2, useCORS:true, logging:false}).then(canvas=>{
+      const agency = document.getElementById('agency-sel').value.replace(/\s+/g,'_');
+      const fecha = new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');
+      const link = document.createElement('a');
+      link.download = `Tablero_Vento_${agency}_${fecha}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+      btn.classList.remove('loading');
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Capturar`;
+      showToast('✓ Imagen guardada');
+    }).catch(()=>{ btn.classList.remove('loading'); btn.innerHTML = 'Capturar'; });
+  },100);
+}
+
+// ─── inicialización ──────────────────────────────────────────────────────
+renderMetrics();
+renderFinancieras();
+renderTraffic();
+updateGaugeFinancieras();
+updateTrafficMeta();
+</script>
+</body>
+</html>
