@@ -2,2083 +2,1500 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0A0A0B">
   <title>Vento · Tablero de Control Diario</title>
+  <script>try{if(localStorage.getItem('vento_theme')==='light')document.documentElement.dataset.theme='light';}catch(e){}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* ═══════════════════════════════════════════════════════════════
+       TOKENS - CLUSTER DE MOTO
+       ═══════════════════════════════════════════════════════════════ */
     :root {
-      --v-red: #E10600;
-      --v-red-dark: #B30000;
-      --v-red-subtle: rgba(225, 6, 0, 0.08);
-      --v-slate-900: #0F172A;
-      --v-slate-800: #1E293B;
-      --v-slate-700: #334155;
-      --v-slate-600: #475569;
-      --v-slate-500: #64748B;
-      --v-slate-400: #94A3B8;
-      --v-slate-200: #E2E8F0;
-      --v-slate-100: #F1F5F9;
-      --v-slate-50: #F8FAFC;
-      --v-white: #FFFFFF;
+      color-scheme: dark;
+      --bg: #0A0A0B;
+      --surface: #121214;
+      --raised: #1A1A1D;
+      --input: #0E0E10;
+      --line: rgba(255,255,255,0.08);
+      --line-2: rgba(255,255,255,0.15);
+      --ink: #F4F4F2;
+      --ink-2: #BDBDB8;
+      --ink-3: #94948F;
+      --track: rgba(255,255,255,0.08);
+      --led-off: rgba(255,255,255,0.07);
+      --row-hover: rgba(255,255,255,0.03);
+      --step-hover: #26262A;
+      --asphalt: #232326;
+      --dash: rgba(255,255,255,0.4);
 
-      /* Semáforos independientes del Rojo Vento */
-      --ok-text: #15803D;
-      --ok-bg: #DCFCE7;
-      --ok-border: #86EFAC;
-      --warn-text: #B45309;
-      --warn-bg: #FEF3C7;
-      --warn-border: #FCD34D;
-      --bad-text: #B91C1C;
-      --bad-bg: #FEE2E2;
-      --bad-border: #FCA5A5;
+      --brand: #E10600;
+      --brand-hover: #C40500;
+      --brand-ink: #FF5247;
+      --brand-dim: rgba(225,6,0,0.16);
+      --ok: #34D27B;
+      --warn: #FFB224;
+      --bad: #FF5A47;
+      --ok-dim: rgba(52,210,123,0.14);
+      --warn-dim: rgba(255,178,36,0.14);
+      --bad-dim: rgba(255,90,71,0.14);
 
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-      --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
-      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.1);
+      --display: 'Saira Condensed', 'Arial Narrow', sans-serif;
+      --body: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+      --r-sm: 6px;
+      --r-md: 10px;
+      --r-lg: 14px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg: #F2F2EF;
+      --surface: #FFFFFF;
+      --raised: #E9E9E5;
+      --input: #FAFAF8;
+      --line: rgba(0,0,0,0.09);
+      --line-2: rgba(0,0,0,0.2);
+      --ink: #141416;
+      --ink-2: #47474B;
+      --ink-3: #636367;
+      --track: rgba(0,0,0,0.09);
+      --led-off: rgba(0,0,0,0.1);
+      --row-hover: rgba(0,0,0,0.03);
+      --step-hover: #DCDCD7;
+      --asphalt: #D5D5D0;
+      --dash: rgba(0,0,0,0.42);
+
+      --brand-ink: #C40500;
+      --brand-dim: rgba(225,6,0,0.12);
+      --ok: #0B7A41;
+      --warn: #945600;
+      --bad: #C8281C;
+      --ok-dim: rgba(11,122,65,0.11);
+      --warn-dim: rgba(190,120,0,0.14);
+      --bad-dim: rgba(200,40,28,0.1);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: var(--v-slate-100);
-      color: var(--v-slate-900);
-      font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--body);
       font-size: 15px;
-      line-height: 1.4;
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      padding-bottom: 80px;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
     }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+    ::selection { background: var(--brand); color: #fff; }
+    html { scrollbar-color: var(--ink-3) var(--bg); scrollbar-gutter: stable; }
+    input, textarea { caret-color: var(--brand-ink); }
+    .gear-row b, .g-read b, .g-read em, .kpi-big, .mtd-stat-val, .live-stat b, .fin-stat-v, .fin-s-val, .m-num, .finput, .stepper-val, .etable td { font-variant-numeric: tabular-nums; }
 
-    /* Contenedor principal */
-    .app-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px;
+    @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes dash { to { background-position-x: -44px; } }
+    @keyframes ledFlash { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+    @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.14); } 100% { transform: scale(1); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
+    .theming, .theming * { transition: background-color 260ms ease, border-color 260ms ease, color 260ms ease !important; }
+    .exporting *, .exporting *::before, .exporting *::after { animation: none !important; transition: none !important; }
 
-    /* Header de aplicación */
-    .app-header {
-      background: var(--v-white);
-      border: 1px solid var(--v-slate-200);
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow-sm);
+    .app { max-width: 1320px; margin: 0 auto; padding: 16px 24px 72px; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       HEADER
+       ═══════════════════════════════════════════════════════════════ */
+    .top {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
       flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .brand-pill {
-      background: var(--v-red);
-      width: 6px;
-      height: 44px;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-    .brand-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      line-height: 1;
-      color: var(--v-slate-900);
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-    .brand-title span {
-      color: var(--v-red);
-      font-weight: 700;
-    }
-    .brand-subtitle {
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--v-slate-500);
-      margin-top: 4px;
-    }
-
-    /* Selector de Agencia & Fecha */
-    .header-controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-    }
-    .select-wrapper {
-      position: relative;
-    }
-    .agency-select {
-      appearance: none;
-      -webkit-appearance: none;
-      background: var(--v-slate-50);
-      border: 1.5px solid var(--v-slate-200);
-      border-radius: var(--radius-sm);
-      padding: 9px 36px 9px 14px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--v-slate-800);
-      cursor: pointer;
-      min-width: 240px;
-      transition: all 0.15s ease;
-    }
-    .agency-select:focus {
-      outline: none;
-      border-color: var(--v-red);
-      background: var(--v-white);
-      box-shadow: 0 0 0 3px var(--v-red-subtle);
-    }
-    .select-wrapper::after {
-      content: '';
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 8px;
-      height: 8px;
-      border-right: 2px solid var(--v-slate-600);
-      border-bottom: 2px solid var(--v-slate-600);
-      transform: translateY(-70%) rotate(45deg);
-      pointer-events: none;
-    }
-
-    .date-badge {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      font-family: 'Barlow Condensed', sans-serif;
-    }
-    .date-badge .day-str {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--v-slate-800);
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-    .date-badge .pacing-str {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--v-slate-500);
-    }
-
-    /* Navegación por Pestañas (Modo Captura vs Modo Scorecard) */
-    .tab-bar {
-      display: flex;
-      background: var(--v-slate-200);
-      padding: 4px;
-      border-radius: var(--radius-md);
-      margin-bottom: 16px;
-      gap: 4px;
-    }
-    .tab-btn {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 16px;
-      border: none;
-      background: transparent;
-      border-radius: var(--radius-sm);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--v-slate-600);
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .tab-btn:hover {
-      color: var(--v-slate-900);
-    }
-    .tab-btn.active {
-      background: var(--v-white);
-      color: var(--v-red);
-      box-shadow: var(--shadow-sm);
-    }
-    .tab-btn svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    /* Barra de Acciones Globales (WhatsApp, Descarga, Compartir) */
-    .action-toolbar {
-      background: var(--v-white);
-      border: 1px solid var(--v-slate-200);
-      border-radius: var(--radius-md);
-      padding: 12px 16px;
-      margin-bottom: 16px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .toolbar-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      border-radius: var(--radius-sm);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-    .btn:active {
-      transform: scale(0.97);
-    }
-    .btn-primary {
-      background: var(--v-red);
-      color: var(--v-white);
-    }
-    .btn-primary:hover {
-      background: var(--v-red-dark);
-    }
-    .btn-whatsapp {
-      background: #25D366;
-      color: var(--v-white);
-    }
-    .btn-whatsapp:hover {
-      background: #1EBE5D;
-    }
-    .btn-secondary {
-      background: var(--v-slate-100);
-      color: var(--v-slate-800);
-      border-color: var(--v-slate-300);
-    }
-    .btn-secondary:hover {
-      background: var(--v-slate-200);
-    }
-    .btn-outline-danger {
-      background: transparent;
-      color: var(--v-slate-500);
-      font-size: 13px;
-      padding: 6px 10px;
-    }
-    .btn-outline-danger:hover {
-      color: var(--bad-text);
-      background: var(--bad-bg);
-    }
-
-    /* Contenido de vistas */
-    .view-panel {
-      display: none;
-    }
-    .view-panel.active {
-      display: block;
-    }
-
-    /* ════════════════════════════════════════════════════════════════════════
-       VISTA 1: MODO CAPTURA (Optimizado para móvil y rapidez)
-       ════════════════════════════════════════════════════════════════════════ */
-    .capture-card {
-      background: var(--v-white);
-      border: 1px solid var(--v-slate-200);
-      border-radius: var(--radius-lg);
-      padding: 18px 20px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow-sm);
-    }
-    .capture-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--v-slate-200);
-      padding-bottom: 10px;
-      margin-bottom: 16px;
-    }
-    .capture-card-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--v-slate-800);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .capture-badge {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: var(--v-slate-100);
-      color: var(--v-slate-600);
-      text-transform: uppercase;
-    }
-
-    .form-grid-4 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 14px;
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .form-label {
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--v-slate-600);
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-    .form-label .helper {
-      font-size: 11px;
-      color: var(--v-slate-400);
-      text-transform: none;
-    }
-    .input-box {
-      background: var(--v-slate-50);
-      border: 1.5px solid var(--v-slate-200);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--v-slate-900);
-      width: 100%;
-      transition: all 0.15s ease;
-    }
-    .input-box:focus {
-      outline: none;
-      border-color: var(--v-red);
-      background: var(--v-white);
-      box-shadow: 0 0 0 3px var(--v-red-subtle);
-    }
-
-    /* Stepper para números enteros en móvil */
-    .stepper-wrap {
-      display: flex;
-      align-items: stretch;
-      border: 1.5px solid var(--v-slate-200);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      background: var(--v-slate-50);
-    }
-    .stepper-btn {
-      width: 44px;
-      background: var(--v-slate-100);
-      border: none;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--v-slate-700);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s;
-      user-select: none;
-    }
-    .stepper-btn:hover {
-      background: var(--v-slate-200);
-    }
-    .stepper-btn:active {
-      background: var(--v-slate-300);
-    }
-    .stepper-input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      text-align: center;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--v-slate-900);
-      padding: 8px 4px;
-      min-width: 0;
-    }
-    .stepper-input:focus {
-      outline: none;
-      background: var(--v-white);
-    }
-
-    /* Tablas de captura rápida */
-    .quick-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .quick-table th {
-      text-align: left;
-      padding: 8px 10px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--v-slate-500);
-      border-bottom: 2px solid var(--v-slate-200);
-    }
-    .quick-table td {
-      padding: 10px;
-      border-bottom: 1px solid var(--v-slate-100);
-      vertical-align: middle;
-    }
-    .quick-table tr:hover td {
-      background: var(--v-slate-50);
-    }
-
-    .source-tag {
-      font-weight: 600;
-      color: var(--v-slate-800);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* ════════════════════════════════════════════════════════════════════════
-       VISTA 2: SCORECARD EJECUTIVO (Diseño limpio para presentación y PNG)
-       ════════════════════════════════════════════════════════════════════════ */
-    #executive-scorecard {
-      background: var(--v-white);
-      border: 1px solid var(--v-slate-200);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-card);
-      margin-bottom: 20px;
-    }
-
-    .scorecard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      border-bottom: 2px solid var(--v-slate-900);
-      padding-bottom: 14px;
-      margin-bottom: 20px;
-    }
-    .scorecard-agency {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--v-slate-900);
-      line-height: 1;
-    }
-    .scorecard-meta {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--v-slate-500);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-top: 5px;
-    }
-    .scorecard-badge-right {
-      text-align: right;
-    }
-    .scorecard-date {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--v-slate-800);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .scorecard-pacing {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 4px;
-      background: var(--v-slate-100);
-      color: var(--v-slate-700);
-      margin-top: 4px;
-    }
-
-    /* Grilla de KPIs principales */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-    @media (max-width: 900px) {
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .kpi-grid { grid-template-columns: 1fr; }
-    }
-
-    .kpi-card {
-      background: var(--v-slate-50);
-      border: 1px solid var(--v-slate-200);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-    }
-    .kpi-card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .kpi-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--v-slate-500);
-    }
-    .kpi-val-main {
-      font-family: 'Barlow Condensed', sans-serif;
+      gap: 14px 24px;
+      padding: 6px 0 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 16px; min-width: 0; }
+    .wordmark {
+      font-family: var(--display);
       font-size: 34px;
       font-weight: 800;
       line-height: 1;
-      color: var(--v-slate-900);
-      font-variant-numeric: tabular-nums;
-      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+      transform: skewX(-10deg);
+      color: var(--ink);
     }
-    .kpi-target-row {
+    .wordmark i { color: var(--brand); font-style: normal; }
+    .brand-rule { width: 1px; height: 34px; background: var(--line-2); flex-shrink: 0; }
+    .brand-title {
+      font-family: var(--display);
       font-size: 13px;
-      color: var(--v-slate-500);
-      margin-bottom: 10px;
-    }
-    .kpi-target-row span {
       font-weight: 600;
-      color: var(--v-slate-700);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      line-height: 1.2;
     }
-
-    /* Barra de progreso */
-    .bar-track {
-      height: 6px;
-      background: var(--v-slate-200);
-      border-radius: 3px;
+    .brand-name {
+      font-family: var(--display);
+      font-size: 21px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
       overflow: hidden;
-      margin-bottom: 8px;
+      text-overflow: ellipsis;
     }
-    .bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.4s ease;
-    }
-    .bar-ok { background: #16A34A; }
-    .bar-warn { background: #D97706; }
-    .bar-bad { background: var(--v-red); }
-
-    .kpi-footer-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-    }
-    .kpi-pct {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-    }
-    .kpi-diff {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--v-slate-500);
-    }
-
-    /* Tarjetas de Financieras y Embudo */
-    .section-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--v-slate-700);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-title::after {
+    .top-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; }
+    .select-wrap { position: relative; }
+    .select-wrap::after {
       content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--v-slate-200);
+      position: absolute; right: 14px; top: 50%;
+      width: 7px; height: 7px;
+      border-right: 2px solid var(--ink-3);
+      border-bottom: 2px solid var(--ink-3);
+      transform: translateY(-70%) rotate(45deg);
+      pointer-events: none;
     }
-
-    .fin-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-    @media (max-width: 700px) {
-      .fin-cards-grid { grid-template-columns: 1fr; }
-    }
-    .fin-block {
-      background: var(--v-slate-50);
-      border: 1px solid var(--v-slate-200);
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
-    }
-    .fin-block-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .fin-name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--v-red);
-      letter-spacing: 0.05em;
-    }
-    .fin-bateo-badge {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
-      text-transform: uppercase;
-    }
-    .fin-stats-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: var(--v-slate-600);
-      border-top: 1px solid var(--v-slate-200);
-      padding-top: 8px;
-      margin-top: 8px;
-    }
-    .fin-stat-item {
-      text-align: center;
-    }
-    .fin-stat-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--v-slate-900);
-    }
-    .fin-stat-label {
-      font-size: 11px;
-      color: var(--v-slate-400);
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .fin-summary-bar {
-      background: var(--v-slate-100);
-      border-radius: var(--radius-sm);
-      padding: 10px 16px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .fin-summary-item {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-    .fin-summary-item .label {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--v-slate-600);
-    }
-    .fin-summary-item .val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--v-slate-900);
-    }
-
-    /* Tabla de Tráfico de Alta Precisión */
-    .exec-table-wrap {
-      overflow-x: auto;
-      margin-bottom: 16px;
-      border: 1px solid var(--v-slate-200);
-      border-radius: var(--radius-md);
-    }
-    .exec-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .exec-table th {
-      background: var(--v-slate-50);
-      padding: 10px 14px;
-      text-align: left;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--v-slate-500);
-      border-bottom: 2px solid var(--v-slate-200);
-    }
-    .exec-table td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--v-slate-100);
-      color: var(--v-slate-800);
-    }
-    .exec-table tfoot td {
-      background: var(--v-slate-50);
-      border-top: 2px solid var(--v-slate-200);
-      font-family: 'Barlow Condensed', sans-serif;
+    .sel {
+      appearance: none;
+      background: var(--surface);
+      border: 1px solid var(--line-2);
+      border-radius: var(--r-sm);
+      padding: 9px 36px 9px 14px;
+      font-family: var(--display);
       font-size: 17px;
-      font-weight: 800;
+      font-weight: 600;
+      min-width: 240px;
+      cursor: pointer;
+      transition: border-color 150ms var(--ease);
     }
-
-    /* Semáforo Pill */
-    .pill {
+    .sel:hover { border-color: var(--ink-3); }
+    .sel option { background: var(--surface); }
+    .theme-btn {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--line-2);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: transform 150ms var(--ease), background 150ms var(--ease), border-color 150ms var(--ease);
     }
-    .pill-ok { background: var(--ok-bg); color: var(--ok-text); }
-    .pill-warn { background: var(--warn-bg); color: var(--warn-text); }
-    .pill-bad { background: var(--bad-bg); color: var(--bad-text); }
+    .theme-btn:hover { transform: translateY(-1px); border-color: var(--ink-3); background: var(--raised); }
+    .theme-btn:active { transform: scale(0.94); }
+    .theme-btn svg { width: 19px; height: 19px; }
+    .theme-btn .i-moon { display: none; }
+    :root[data-theme="light"] .theme-btn .i-moon { display: block; }
+    :root[data-theme="light"] .theme-btn .i-sun { display: none; }
+    .date-block { font-family: var(--display); text-align: right; line-height: 1.25; }
+    .date-main { font-size: 15px; font-weight: 600; letter-spacing: 0.02em; }
+    .date-pacing { font-size: 14px; font-weight: 500; color: var(--ink-3); }
 
-    /* Metas de piso pills */
-    .meta-pills-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .meta-pill {
-      background: var(--v-slate-50);
-      border: 1px solid var(--v-slate-200);
-      border-radius: var(--radius-sm);
-      padding: 8px 14px;
+    /* ═══════════════════════════════════════════════════════════════
+       TABS + ACCIONES
+       ═══════════════════════════════════════════════════════════════ */
+    .bar {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin-bottom: 16px;
     }
-    .meta-pill .label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--v-slate-600);
-      text-transform: uppercase;
+    .tabs {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 4px;
+      min-width: 400px;
     }
-    .meta-pill .num {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--v-slate-900);
+    .tab-ind {
+      position: absolute;
+      top: 4px; bottom: 4px; left: 4px;
+      width: calc(50% - 4px);
+      background: var(--brand);
+      border-radius: var(--r-sm);
+      transition: transform 320ms var(--ease);
     }
-
-    /* Comentarios */
-    .exec-comments {
-      background: var(--v-slate-50);
-      border: 1px solid var(--v-slate-200);
-      border-radius: var(--radius-md);
-      padding: 14px 18px;
-      font-size: 14px;
-      color: var(--v-slate-700);
-      line-height: 1.5;
-    }
-    .exec-comments-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
+    .tabs[data-on="scorecard"] .tab-ind { transform: translateX(100%); }
+    .tab {
+      position: relative;
+      background: none;
+      border: 0;
+      padding: 9px 16px;
+      font-family: var(--display);
+      font-size: 16px;
       font-weight: 700;
-      text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: var(--v-slate-400);
-      margin-bottom: 4px;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: color 200ms var(--ease);
+    }
+    .tab:hover { color: var(--ink); }
+    .tab.on { color: #fff; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--line-2);
+      background: transparent;
+      font-family: var(--display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 150ms var(--ease), background 150ms var(--ease), border-color 150ms var(--ease), color 150ms var(--ease);
+    }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn:hover { transform: translateY(-1px); background: var(--raised); border-color: var(--ink-3); }
+    .btn:active { transform: translateY(0) scale(0.97); }
+    .btn[disabled] { opacity: 0.6; cursor: progress; transform: none; }
+    .btn-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .btn-primary:hover { background: var(--brand-hover); border-color: var(--brand-hover); }
+    .btn-quiet { border-color: transparent; color: var(--ink-3); padding-inline: 10px; }
+    .btn-quiet:hover { color: var(--bad); background: var(--bad-dim); border-color: transparent; }
+
+    .panel { display: none; }
+    .panel.on { display: block; animation: fade 260ms ease both; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       CAPTURA
+       ═══════════════════════════════════════════════════════════════ */
+    .cap { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+    .cap-main { display: grid; gap: 16px; min-width: 0; }
+    .ccard {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 20px 22px;
+    }
+    .ccard-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .ccard-title {
+      font-family: var(--display);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+    }
+    .badge { font-size: 13px; font-weight: 500; color: var(--ink-3); white-space: nowrap; }
+    .fgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .fgroup { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .flabel { font-size: 13px; font-weight: 500; color: var(--ink-2); line-height: 1.3; }
+    .finput, .stepper { height: 46px; }
+    .finput {
+      background: var(--input);
+      border: 1px solid var(--line-2);
+      border-radius: var(--r-sm);
+      padding: 0 12px;
+      font-family: var(--display);
+      font-size: 20px;
+      font-weight: 600;
+      width: 100%;
+      transition: border-color 150ms var(--ease), box-shadow 150ms var(--ease);
+    }
+    .finput:focus, .comment-box:focus, .sel:focus {
+      outline: none;
+      border-color: var(--brand-ink);
+      box-shadow: 0 0 0 3px var(--brand-dim);
+    }
+    .finput::placeholder, .comment-box::placeholder { color: var(--ink-3); opacity: 0.7; }
+    input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+    input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+    .stepper {
+      display: flex;
+      background: var(--input);
+      border: 1px solid var(--line-2);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      transition: border-color 150ms var(--ease), box-shadow 150ms var(--ease);
+    }
+    .stepper:focus-within { border-color: var(--brand-ink); box-shadow: 0 0 0 3px var(--brand-dim); }
+    .stepper-btn {
+      flex: 0 0 42px;
+      background: var(--raised);
+      border: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink-2);
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      transition: background 120ms var(--ease), color 120ms var(--ease);
+    }
+    .stepper-btn:hover { background: var(--step-hover); color: var(--ink); }
+    .stepper-btn:active { background: var(--brand); color: #fff; }
+    .stepper-btn:focus-visible { outline-offset: -2px; }
+    .stepper-val {
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      text-align: center;
+      font-family: var(--display);
+      font-size: 21px;
+      font-weight: 700;
+    }
+    .stepper-val:focus { outline: none; }
+
+    .dash-div { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 16px; }
+    .dash-div-title {
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .dash-div-title { margin-bottom: 12px; }
+
+    .qtable { width: 100%; border-collapse: collapse; }
+    .qtable th {
+      text-align: left;
+      padding: 0 8px 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-3);
+    }
+    .qtable th:first-child, .qtable td:first-child { padding-left: 0; }
+    .qtable td { padding: 6px 8px; vertical-align: middle; }
+    .qtable td:last-child, .qtable th:last-child { padding-right: 0; }
+    .src-name { font-family: var(--display); font-weight: 600; font-size: 17px; white-space: nowrap; }
+
+    .comment-box {
+      display: block;
+      width: 100%;
+      min-height: 92px;
+      padding: 12px 14px;
+      background: var(--input);
+      border: 1px solid var(--line-2);
+      border-radius: var(--r-sm);
+      font-size: 16px;
+      line-height: 1.5;
+      resize: vertical;
+      transition: border-color 150ms var(--ease), box-shadow 150ms var(--ease);
     }
 
-    /* Footer del Scorecard */
-    .scorecard-footer {
+    /* Tablero en vivo */
+    .live {
+      position: sticky;
+      top: 16px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 16px 18px 18px;
+      z-index: 5;
+    }
+    .live-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .live-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--line);
+      border-top: 1px solid var(--line);
+      margin: 10px -18px -18px;
+      border-radius: 0 0 var(--r-lg) var(--r-lg);
+      overflow: hidden;
+    }
+    .live-stat { background: var(--surface); padding: 10px 18px 12px; min-width: 0; }
+    .live-stat span { display: block; font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+    .live-stat b { font-family: var(--display); font-size: 25px; font-weight: 700; line-height: 1.15; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       INSTRUMENTOS
+       ═══════════════════════════════════════════════════════════════ */
+    .leds { display: grid; grid-template-columns: repeat(20, 1fr); gap: 4px; }
+    .led {
+      height: 8px;
+      border-radius: 2px;
+      background: var(--led-off);
+      transition: background 180ms ease, box-shadow 180ms ease;
+    }
+    .led.on.bad { background: var(--bad); box-shadow: 0 0 8px var(--bad); }
+    .led.on.warn { background: var(--warn); box-shadow: 0 0 8px var(--warn); }
+    .led.on.ok { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+    :root[data-theme="light"] .led.on { box-shadow: none; }
+    .leds.flash .led { animation: ledFlash 260ms ease 4; }
+
+    .gauge { position: relative; width: 100%; max-width: 340px; margin: 0 auto; aspect-ratio: 1 / 0.94; }
+    .gauge canvas { display: block; width: 100%; height: 100%; }
+    .g-read { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; line-height: 1.1; pointer-events: none; }
+    .g-read b { display: block; font-family: var(--display); font-size: clamp(34px, 4vw, 46px); font-weight: 800; line-height: 1; }
+    .g-read span { display: block; font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); margin-top: 3px; }
+    .g-read em { display: block; font-style: normal; font-size: 13px; color: var(--ink-3); margin-top: 1px; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SCORECARD
+       ═══════════════════════════════════════════════════════════════ */
+    #exec-sc {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 24px 28px;
+    }
+    #p-sc.on #exec-sc > * { animation: rise 460ms var(--ease) both; }
+    #p-sc.on #exec-sc > :nth-child(2) { animation-delay: 50ms; }
+    #p-sc.on #exec-sc > :nth-child(3) { animation-delay: 100ms; }
+    #p-sc.on #exec-sc > :nth-child(n+4) { animation-delay: 150ms; }
+
+    .sc-header {
       display: flex;
       justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin-bottom: 18px;
+    }
+    .sc-agency { font-family: var(--display); font-size: 38px; font-weight: 800; line-height: 1.05; }
+    .sc-subtitle { font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-top: 2px; }
+    .sc-date { font-family: var(--display); font-size: 16px; font-weight: 600; text-align: right; }
+    .sc-pace { font-family: var(--display); font-size: 15px; font-weight: 500; color: var(--ink-3); text-align: right; }
+
+    .cluster {
+      background: var(--surface);
+      border: 1px solid var(--line-2);
+      border-radius: 20px;
+      padding: 16px 24px 22px;
+      margin-bottom: 16px;
+    }
+    .cluster .leds { max-width: 620px; margin: 0 auto 14px; }
+    .cluster-grid { display: grid; grid-template-columns: 1fr 250px 1fr; gap: 12px; align-items: center; }
+    .gear { text-align: center; }
+    .gear-lbl { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+    .gear-num { font-family: var(--display); font-size: 132px; font-weight: 800; line-height: 1; display: inline-block; }
+    .gear-num.pop { animation: pop 300ms var(--ease); }
+    .gear-of { font-family: var(--display); font-size: 17px; font-weight: 600; color: var(--ink-2); }
+    .gear-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--line);
+      margin-top: 12px;
+      padding-top: 10px;
+    }
+    .gear-row div + div { border-left: 1px solid var(--line); }
+    .gear-row span { display: block; font-size: 13px; color: var(--ink-3); }
+    .gear-row b { font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.15; }
+
+    /* Ruta del mes */
+    .route { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 16px 20px 18px; margin-bottom: 24px; }
+    .route-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+    .route-title { font-family: var(--display); font-size: 20px; font-weight: 700; }
+    .road { position: relative; height: 104px; }
+    .road-bed {
+      position: absolute;
+      left: 0; right: 0; bottom: 6px;
+      height: 14px;
+      background-color: var(--asphalt);
+      border-radius: 3px;
+    }
+    .road-dash {
+      position: absolute;
+      left: 0; right: 0; top: 6px;
+      height: 2px;
+      background-image: linear-gradient(90deg, var(--dash) 0 22px, transparent 22px 44px);
+      background-size: 44px 2px;
+    }
+    .road.riding .road-dash { animation: dash 260ms linear 5; }
+    .road-track { position: absolute; left: 108px; right: 30px; top: 0; bottom: 0; }
+    .road-fill {
+      position: absolute;
+      left: -108px; bottom: 6px;
+      height: 14px;
+      width: 0;
+      background: var(--brand);
+      border-radius: 3px 0 0 3px;
+      transition: width 1300ms var(--ease);
+    }
+    .road-pace { position: absolute; top: 2px; bottom: 6px; left: 0; width: 2px; background: var(--ink); transition: left 700ms var(--ease); }
+    .road-pace span {
+      position: absolute;
+      top: -2px;
+      left: 7px;
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .road-pace.flip span { left: auto; right: 7px; }
+    .road-moto { position: absolute; bottom: 18px; left: 0; width: 104px; transform: translateX(-100%); transition: left 1300ms var(--ease); }
+    .road-moto svg { display: block; width: 104px; height: 64px; }
+    .road.riding .wheel { animation: spin 300ms linear 4; transform-box: fill-box; transform-origin: center; }
+    .road-finish {
+      position: absolute;
+      right: 0; bottom: 6px;
+      width: 18px; height: 42px;
+      background-image: linear-gradient(45deg, var(--ink) 25%, transparent 25% 75%, var(--ink) 75%), linear-gradient(45deg, var(--ink) 25%, transparent 25% 75%, var(--ink) 75%);
+      background-size: 12px 12px;
+      background-position: 0 0, 6px 6px;
+      background-color: var(--asphalt);
+    }
+    .mtd-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .mtd-stat-lbl { display: block; font-size: 13px; color: var(--ink-3); }
+    .mtd-stat-val { font-family: var(--display); font-size: 25px; font-weight: 700; line-height: 1.15; }
+
+    .sec-title { font-family: var(--display); font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .kpi, .fin-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 16px;
+      transition: border-color 200ms var(--ease);
+      min-width: 0;
+    }
+    .kpi:hover, .fin-card:hover { border-color: var(--line-2); }
+    .kpi-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .kpi-label { font-size: 14px; font-weight: 500; color: var(--ink-2); }
+    .pill {
+      display: inline-block;
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .pill-ok { background: var(--ok-dim); color: var(--ok); }
+    .pill-warn { background: var(--warn-dim); color: var(--warn); }
+    .pill-bad { background: var(--bad-dim); color: var(--bad); }
+    .pill-auto { background: var(--track); color: var(--ink-2); }
+    .kpi-big { font-family: var(--display); font-size: 34px; font-weight: 800; line-height: 1.05; margin-bottom: 2px; white-space: nowrap; }
+    .kpi-target { font-size: 14px; color: var(--ink-3); margin-bottom: 12px; }
+    .kpi-target span { color: var(--ink-2); }
+    .prog-track { height: 6px; background: var(--track); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+    .prog-fill { height: 100%; width: 0; border-radius: 3px; transition: width 800ms var(--ease), background 300ms ease; }
+    .prog-ok { background: var(--ok); }
+    .prog-warn { background: var(--warn); }
+    .prog-bad { background: var(--bad); }
+    .kpi-diff { font-size: 14px; color: var(--ink-2); }
+
+    .fin-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .fin-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .fin-name { font-family: var(--display); font-size: 18px; font-weight: 700; line-height: 1.2; }
+    .fin-row { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); padding-top: 10px; }
+    .fin-stat-v { font-family: var(--display); font-size: 25px; font-weight: 700; line-height: 1.15; }
+    .fin-stat-l { font-size: 13px; color: var(--ink-3); }
+    .fin-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 28px;
+      padding: 10px 16px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      margin-bottom: 24px;
+    }
+    .fin-s-item { display: flex; align-items: baseline; gap: 8px; }
+    .fin-s-lbl { font-size: 14px; color: var(--ink-3); }
+    .fin-s-val { font-family: var(--display); font-size: 21px; font-weight: 700; }
+
+    .etable-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: 12px; }
+    .etable { width: 100%; border-collapse: collapse; }
+    .etable th { padding: 10px 16px; text-align: left; font-size: 13px; font-weight: 500; color: var(--ink-3); border-bottom: 1px solid var(--line); }
+    .etable td { padding: 9px 16px; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+    .etable td:first-child { font-weight: 500; color: var(--ink); white-space: nowrap; }
+    .etable tbody tr { transition: background 150ms var(--ease); }
+    .etable tbody tr:hover { background: var(--row-hover); }
+    .etable tfoot td { border-bottom: 0; font-family: var(--display); font-size: 19px; font-weight: 700; color: var(--ink); }
+    .etable .num { text-align: center; }
+    .etable .end { text-align: right; }
+    .conv { display: inline-flex; align-items: center; justify-content: flex-end; gap: 10px; }
+    .mini { display: block; width: 72px; height: 6px; background: var(--track); border-radius: 3px; overflow: hidden; }
+    .mini i { display: block; height: 100%; width: 0; border-radius: 3px; transition: width 800ms var(--ease), background 300ms ease; }
+
+    .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .meta-pill {
+      display: flex;
       align-items: center;
-      margin-top: 20px;
-      padding-top: 12px;
-      border-top: 1px solid var(--v-slate-200);
-      font-size: 11px;
-      color: var(--v-slate-400);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+      gap: 4px 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 10px 16px;
+    }
+    .m-lbl { font-size: 14px; color: var(--ink-2); }
+    .m-num { font-family: var(--display); font-size: 21px; font-weight: 700; margin-left: auto; }
+    .exec-comments { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; }
+    .exec-comments-title { font-size: 13px; color: var(--ink-3); margin-bottom: 2px; }
+    .exec-comments-body { color: var(--ink); overflow-wrap: anywhere; }
+    .sc-footer {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--ink-3);
     }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: var(--v-slate-900);
-      color: var(--v-white);
-      padding: 12px 20px;
-      border-radius: var(--radius-sm);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(20px);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 999999;
       display: flex;
       align-items: center;
       gap: 10px;
-    }
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    /* Acumulado MTD Card especial */
-    .mtd-banner {
-      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-      border-radius: var(--radius-md);
-      color: var(--v-white);
-      padding: 14px 18px;
-      margin-bottom: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-    .mtd-banner-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .mtd-stats-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .mtd-stat {
-      display: flex;
-      flex-direction: column;
-    }
-    .mtd-stat-label {
-      font-size: 11px;
-      color: var(--v-slate-400);
-      text-transform: uppercase;
+      background: var(--raised);
+      border: 1px solid var(--line-2);
+      padding: 12px 18px;
+      border-radius: var(--r-md);
+      font-family: var(--display);
+      font-size: 17px;
       font-weight: 600;
-      letter-spacing: 0.04em;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.55);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 300ms var(--ease), opacity 300ms var(--ease);
+      z-index: 50;
+      max-width: calc(100vw - 32px);
     }
-    .mtd-stat-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 22px;
-      font-weight: 800;
-      color: #38BDF8;
+    .toast.show { transform: none; opacity: 1; }
+    .toast.err svg { display: none; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 1120px) {
+      .cap { grid-template-columns: minmax(0, 1fr); }
+      .live { order: -1; top: 0; margin: 0 -24px; padding: 10px 24px 0; border-width: 0 0 1px; border-radius: 0; background: var(--bg); }
+      .live-head, .live .gauge { display: none; }
+      .live-stats { grid-template-columns: repeat(4, 1fr); background: none; border: 0; border-radius: 0; margin: 6px 0 0; }
+      .live-stat { background: none; padding: 0 0 8px; }
+      .live-stat b { font-size: 21px; }
+      .live-stat span { font-size: 12px; }
+      .fgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cluster-grid { grid-template-columns: 1fr 200px 1fr; }
+      .gear-num { font-size: 104px; }
+    }
+    @media (max-width: 820px) {
+      .cluster-grid { grid-template-columns: 1fr 1fr; }
+      .gear { grid-column: 1 / -1; grid-row: 1; display: grid; grid-template-columns: auto 1fr; gap: 0 20px; align-items: center; text-align: left; }
+      .gear-main { display: flex; align-items: baseline; gap: 10px; }
+      .gear-num { font-size: 72px; }
+      .gear-lbl { grid-column: 1 / -1; }
+      .gear-row { margin: 0; padding: 0 0 0 16px; border-top: 0; border-left: 1px solid var(--line); text-align: center; }
+      .fin-grid { grid-template-columns: minmax(0, 1fr); }
+      .mtd-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .meta-row { grid-template-columns: minmax(0, 1fr); }
+      .tabs { min-width: 0; width: 100%; }
+      .actions { width: 100%; }
+      .actions .btn-primary, #btn-dl { flex: 1; }
+    }
+    @media (max-width: 640px) {
+      .app { padding: 10px 16px 64px; }
+      .live { margin: 0 -16px; padding: 10px 16px 0; }
+      .top-controls, .sel { width: 100%; }
+      .select-wrap { flex: 1; min-width: 0; }
+      .sel { min-width: 0; }
+      .date-block { order: 3; width: 100%; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; text-align: left; }
+      .toast { right: 16px; bottom: 16px; }
+      .wordmark { font-size: 28px; }
+      .brand-name { font-size: 18px; }
+      .ccard { padding: 16px; }
+      #exec-sc { padding: 16px 12px; border-radius: var(--r-md); }
+      .sc-agency { font-size: 30px; }
+      .sc-date, .sc-pace { text-align: left; }
+      .cluster { padding: 12px 12px 14px; }
+      .cluster-grid { gap: 8px; }
+      .g-read b { font-size: 30px; }
+      .g-read span { font-size: 12px; }
+      .g-read em { font-size: 12px; }
+      .route { padding: 14px; }
+      .kpi-big { font-size: 30px; }
+      .kpi { padding: 14px; }
+
+      /* Tablas de captura como filas apiladas */
+      .qtable thead { display: none; }
+      .qtable, .qtable tbody { display: block; }
+      .qtable tr { display: grid; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line); }
+      .qtable tr:first-child { border-top: 0; padding-top: 0; }
+      .qtable tr:last-child { padding-bottom: 0; }
+      .qtable.cols-3 tr { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .qtable.cols-2 tr { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .qtable td { display: block; padding: 0; min-width: 0; }
+      .qtable td:first-child { grid-column: 1 / -1; }
+      .qtable td[data-l]::before { content: attr(data-l); display: block; font-size: 13px; color: var(--ink-3); margin-bottom: 4px; }
+      .qtable.cols-3 .stepper-btn { flex-basis: 34px; }
+      .tab { padding: 9px 6px; font-size: 15px; letter-spacing: 0.03em; white-space: nowrap; }
+    }
+    @media (max-width: 480px) {
+      .kpi-grid { grid-template-columns: minmax(0, 1fr); }
+      .etable th, .etable td { padding-inline: 10px; }
+      .mini { display: none; }
+      .mtd-stat-val { font-size: 21px; }
+      .etable td:first-child { white-space: normal; }
+      .cluster-grid { grid-template-columns: minmax(0, 1fr); }
+      .gauge { max-width: 270px; }
+      .g-read b { font-size: 38px; }
+      .g-read span { font-size: 14px; }
+      .g-read em { font-size: 13px; }
     }
   </style>
 </head>
 <body>
+<div class="app">
 
-<div class="app-container">
-
-  <!-- Header Superior -->
-  <header class="app-header">
-    <div class="brand-section">
-      <div class="brand-pill"></div>
-      <div>
-        <div class="brand-title">VENTO <span>/</span> <span id="hdr-agency-name" style="color:var(--v-slate-700); font-weight:600;">44 Jiutepec Morelos</span></div>
-        <div class="brand-subtitle">Tablero de Control Diario y Desempeño Operativo</div>
+  <!-- ═══ HEADER ═══ -->
+  <header class="top">
+    <div class="brand">
+      <span class="wordmark">VENTO<i>/</i></span>
+      <span class="brand-rule"></span>
+      <div style="min-width:0;">
+        <div class="brand-title">Tablero de Control Diario</div>
+        <div class="brand-name" id="hdr-name">44 Jiutepec Morelos</div>
       </div>
     </div>
-    <div class="header-controls">
-      <div class="select-wrapper">
-        <select class="agency-select" id="agency-select" onchange="onAgencyChange(this.value)">
-          <optgroup label="── MORELOS ──">
-            <option value="103 Cuernavaca Sur">103 Cuernavaca Sur</option>
-            <option value="106 Emiliano Zapata">106 Emiliano Zapata</option>
-            <option value="124 Puente de Ixtla">124 Puente de Ixtla</option>
-            <option value="17 Cuautla">17 Cuautla</option>
-            <option value="173 Temixco">173 Temixco</option>
-            <option value="18 Cuernavaca">18 Cuernavaca</option>
-            <option value="202 Axochiapan">202 Axochiapan</option>
-            <option value="34 Yautepec">34 Yautepec</option>
-            <option value="44 Jiutepec Morelos" selected>44 Jiutepec Morelos</option>
-            <option value="95 Jojutla">95 Jojutla</option>
-            <option value="283 Yecapixtla">283 Yecapixtla</option>
-            <option value="248 Emiliano Zapata Centro">248 Emiliano Zapata Centro</option>
-          </optgroup>
-          <optgroup label="── CHALCO / ORIENTE ──">
-            <option value="121 Chalco-Cuautzingo">121 Chalco-Cuautzingo</option>
-            <option value="123 Chalco-Mixquic">123 Chalco-Mixquic</option>
-            <option value="147 Chalco-Solidaridad">147 Chalco-Solidaridad</option>
-            <option value="177 Amecameca">177 Amecameca</option>
-            <option value="205 Valle de Chalco Tezozómoc">205 Valle de Chalco Tezozómoc</option>
-            <option value="22 Valle de Chalco">22 Valle de Chalco</option>
-            <option value="25 Chalco">25 Chalco</option>
-            <option value="128 Ayotla">128 Ayotla</option>
-            <option value="185 Ixtapaluca">185 Ixtapaluca</option>
-            <option value="57 Chicoloapan">57 Chicoloapan</option>
-            <option value="162 Chiconcuac">162 Chiconcuac</option>
-            <option value="24 Texcoco">24 Texcoco</option>
-          </optgroup>
-          <optgroup label="── NEZA / CHIMALHUACÁN ──">
-            <option value="06 Ecatepec">06 Ecatepec</option>
-            <option value="07 Nezahualcóyotl">07 Nezahualcóyotl</option>
-            <option value="08 Chimalhuacán">08 Chimalhuacán</option>
-            <option value="112 Neza-Raúl Romero">112 Neza-Raúl Romero</option>
-            <option value="113 Maravillas">113 Maravillas</option>
-            <option value="137 Peñon">137 Peñon</option>
-            <option value="166 Los Reyes la Paz">166 Los Reyes la Paz</option>
-            <option value="40 Nezahualcoyotl Oriente">40 Nezahualcoyotl Oriente</option>
-            <option value="297 San Antonio Tecomitl">297 San Antonio Tecomitl</option>
-          </optgroup>
-          <optgroup label="── CDMX SUR / XOCHIMILCO ──">
-            <option value="01 Rojo Gomez">01 Rojo Gomez</option>
-            <option value="14 Tláhuac">14 Tláhuac</option>
-            <option value="156 San Andres Totoltepec">156 San Andres Totoltepec</option>
-            <option value="161 Santa Cecilia">161 Santa Cecilia</option>
-            <option value="23 Acatitla">23 Acatitla</option>
-            <option value="56 La Pastora">56 La Pastora</option>
-            <option value="65 Ermita">65 Ermita</option>
-            <option value="67 Xochimilco">67 Xochimilco</option>
-            <option value="75 Ermita Santa Cruz">75 Ermita Santa Cruz</option>
-            <option value="83 Centenario">83 Centenario</option>
-            <option value="230 Tlalpan-Ermita">230 Tlalpan-Ermita</option>
-          </optgroup>
-          <optgroup label="── CDMX NORTE / CENTRO ──">
-            <option value="02 Insurgentes">02 Insurgentes</option>
-            <option value="03 Condesa">03 Condesa</option>
-            <option value="04 San Angel">04 San Angel</option>
-            <option value="107 Vasco de Quiroga">107 Vasco de Quiroga</option>
-            <option value="129 San Bernabe">129 San Bernabe</option>
-            <option value="13 La Villa">13 La Villa</option>
-            <option value="29 Oceania">29 Oceania</option>
-            <option value="82 Insurgentes Sur">82 Insurgentes Sur</option>
-            <option value="19001 POLANCO CMX">19001 POLANCO CMX</option>
-            <option value="19003 INSURGENTES CMX">19003 INSURGENTES CMX</option>
-            <option value="151 Casas Alemán">151 Casas Alemán</option>
-            <option value="235 Portal Centenario">235 Portal Centenario</option>
-            <option value="268 Picacho Ajusco">268 Picacho Ajusco</option>
-          </optgroup>
-          <optgroup label="── ACAPULCO / GUERRERO ──">
-            <option value="110 Acapulco Centro">110 Acapulco Centro</option>
-            <option value="104 Acapulco Cuauhtemoc">104 Acapulco Cuauhtemoc</option>
-            <option value="119 Patio Acapulco">119 Patio Acapulco</option>
-            <option value="127 Pie de la Cuesta">127 Pie de la Cuesta</option>
-            <option value="142 Iguala">142 Iguala</option>
-            <option value="157 Taxco">157 Taxco</option>
-            <option value="211 Acapulco Renacimiento">211 Acapulco Renacimiento</option>
-            <option value="233 Chilpancingo Centro">233 Chilpancingo Centro</option>
-            <option value="232 Chilpancingo Sur">232 Chilpancingo Sur</option>
-            <option value="231 Chilapa Guerrero">231 Chilapa Guerrero</option>
-            <option value="271 Tecpan">271 Tecpan</option>
-            <option value="277 Atoyac">277 Atoyac</option>
-            <option value="286 Teloloapan">286 Teloloapan</option>
-          </optgroup>
-          <optgroup label="── SURESTE ──">
-            <option value="288 Motul">288 Motul</option>
-            <option value="279 Playa del Carmen">279 Playa del Carmen</option>
-            <option value="244 Campeche Centro">244 Campeche Centro</option>
-            <option value="275 Chetumal">275 Chetumal</option>
-            <option value="243 Champoton">243 Champoton</option>
-          </optgroup>
+    <div class="top-controls">
+      <div class="select-wrap">
+        <select class="sel" id="sel-ag" aria-label="Agencia" onchange="chgAgency(this.value)">
+          <optgroup label="── MORELOS ──"><option value="103 Cuernavaca Sur">103 Cuernavaca Sur</option><option value="106 Emiliano Zapata">106 Emiliano Zapata</option><option value="124 Puente de Ixtla">124 Puente de Ixtla</option><option value="17 Cuautla">17 Cuautla</option><option value="173 Temixco">173 Temixco</option><option value="18 Cuernavaca">18 Cuernavaca</option><option value="202 Axochiapan">202 Axochiapan</option><option value="34 Yautepec">34 Yautepec</option><option value="44 Jiutepec Morelos" selected>44 Jiutepec Morelos</option><option value="95 Jojutla">95 Jojutla</option><option value="283 Yecapixtla">283 Yecapixtla</option><option value="248 Emiliano Zapata Centro">248 Emiliano Zapata Centro</option></optgroup>
+          <optgroup label="── CHALCO / ORIENTE ──"><option value="121 Chalco-Cuautzingo">121 Chalco-Cuautzingo</option><option value="123 Chalco-Mixquic">123 Chalco-Mixquic</option><option value="147 Chalco-Solidaridad">147 Chalco-Solidaridad</option><option value="177 Amecameca">177 Amecameca</option><option value="205 Valle de Chalco Tezozómoc">205 Valle de Chalco Tezozómoc</option><option value="22 Valle de Chalco">22 Valle de Chalco</option><option value="25 Chalco">25 Chalco</option><option value="128 Ayotla">128 Ayotla</option><option value="185 Ixtapaluca">185 Ixtapaluca</option><option value="57 Chicoloapan">57 Chicoloapan</option><option value="162 Chiconcuac">162 Chiconcuac</option><option value="24 Texcoco">24 Texcoco</option></optgroup>
+          <optgroup label="── NEZA / CHIMALHUACÁN ──"><option value="06 Ecatepec">06 Ecatepec</option><option value="07 Nezahualcóyotl">07 Nezahualcóyotl</option><option value="08 Chimalhuacán">08 Chimalhuacán</option><option value="112 Neza-Raúl Romero">112 Neza-Raúl Romero</option><option value="113 Maravillas">113 Maravillas</option><option value="137 Peñon">137 Peñon</option><option value="166 Los Reyes la Paz">166 Los Reyes la Paz</option><option value="40 Nezahualcoyotl Oriente">40 Nezahualcoyotl Oriente</option><option value="297 San Antonio Tecomitl">297 San Antonio Tecomitl</option></optgroup>
+          <optgroup label="── CDMX SUR / XOCHIMILCO ──"><option value="01 Rojo Gomez">01 Rojo Gomez</option><option value="14 Tláhuac">14 Tláhuac</option><option value="156 San Andres Totoltepec">156 San Andres Totoltepec</option><option value="161 Santa Cecilia">161 Santa Cecilia</option><option value="23 Acatitla">23 Acatitla</option><option value="56 La Pastora">56 La Pastora</option><option value="65 Ermita">65 Ermita</option><option value="67 Xochimilco">67 Xochimilco</option><option value="75 Ermita Santa Cruz">75 Ermita Santa Cruz</option><option value="83 Centenario">83 Centenario</option><option value="230 Tlalpan-Ermita">230 Tlalpan-Ermita</option></optgroup>
+          <optgroup label="── CDMX NORTE / CENTRO ──"><option value="02 Insurgentes">02 Insurgentes</option><option value="03 Condesa">03 Condesa</option><option value="04 San Angel">04 San Angel</option><option value="107 Vasco de Quiroga">107 Vasco de Quiroga</option><option value="129 San Bernabe">129 San Bernabe</option><option value="13 La Villa">13 La Villa</option><option value="29 Oceania">29 Oceania</option><option value="82 Insurgentes Sur">82 Insurgentes Sur</option><option value="19001 POLANCO CMX">19001 POLANCO CMX</option><option value="19003 INSURGENTES CMX">19003 INSURGENTES CMX</option><option value="151 Casas Alemán">151 Casas Alemán</option><option value="235 Portal Centenario">235 Portal Centenario</option><option value="268 Picacho Ajusco">268 Picacho Ajusco</option></optgroup>
+          <optgroup label="── ACAPULCO / GUERRERO ──"><option value="110 Acapulco Centro">110 Acapulco Centro</option><option value="104 Acapulco Cuauhtemoc">104 Acapulco Cuauhtemoc</option><option value="119 Patio Acapulco">119 Patio Acapulco</option><option value="127 Pie de la Cuesta">127 Pie de la Cuesta</option><option value="142 Iguala">142 Iguala</option><option value="157 Taxco">157 Taxco</option><option value="211 Acapulco Renacimiento">211 Acapulco Renacimiento</option><option value="233 Chilpancingo Centro">233 Chilpancingo Centro</option><option value="232 Chilpancingo Sur">232 Chilpancingo Sur</option><option value="231 Chilapa Guerrero">231 Chilapa Guerrero</option><option value="271 Tecpan">271 Tecpan</option><option value="277 Atoyac">277 Atoyac</option><option value="286 Teloloapan">286 Teloloapan</option></optgroup>
+          <optgroup label="── SURESTE ──"><option value="288 Motul">288 Motul</option><option value="279 Playa del Carmen">279 Playa del Carmen</option><option value="244 Campeche Centro">244 Campeche Centro</option><option value="275 Chetumal">275 Chetumal</option><option value="243 Champoton">243 Champoton</option></optgroup>
         </select>
       </div>
-      <div class="date-badge">
-        <div class="day-str" id="date-display">Viernes, 6 de Noviembre</div>
-        <div class="pacing-str" id="month-pacing-str">Día 6 de 30 · 20% del mes</div>
+      <div class="date-block">
+        <div class="date-main" id="d-main"></div>
+        <div class="date-pacing" id="d-pace"></div>
       </div>
+      <button class="theme-btn" id="btn-theme" onclick="toggleTheme()">
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
     </div>
   </header>
 
-  <!-- Selector de Modo (Tabs) -->
-  <div class="tab-bar">
-    <button class="tab-btn active" id="tab-btn-capture" onclick="switchView('capture')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Modo Captura de Datos
-    </button>
-    <button class="tab-btn" id="tab-btn-scorecard" onclick="switchView('scorecard')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Scorecard Ejecutivo
-    </button>
-  </div>
-
-  <!-- Barra de Herramientas & Exportación Multi-Canal -->
-  <div class="action-toolbar">
-    <div class="toolbar-group">
-      <button class="btn btn-whatsapp" onclick="copyWhatsAppReport()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.173.231-.144.39-.086s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824z"/></svg>
-        Copiar para WhatsApp
-      </button>
-      <button class="btn btn-primary" id="btn-download-img" onclick="downloadScorecardPNG()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        Descargar Imagen PNG
-      </button>
-      <button class="btn btn-secondary" id="btn-native-share" onclick="nativeShareScorecard()" style="display:none;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Compartir en Móvil
-      </button>
+  <!-- ═══ TABS + ACCIONES ═══ -->
+  <div class="bar">
+    <div class="tabs" id="tabs" data-on="capture" role="tablist" onkeydown="tabKey(event)">
+      <span class="tab-ind"></span>
+      <button class="tab on" id="t-cap" role="tab" aria-selected="true" aria-controls="p-cap" onclick="go('capture')">Captura de Datos</button>
+      <button class="tab" id="t-sc" role="tab" tabindex="-1" aria-selected="false" aria-controls="p-sc" onclick="go('scorecard')">Scorecard Ejecutivo</button>
     </div>
-    <div class="toolbar-group">
-      <button class="btn btn-outline-danger" onclick="resetDailyData()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-        Reiniciar Día
+    <div class="actions">
+      <button class="btn btn-primary" onclick="copyWA()">
+        <svg viewBox="5.4 5.4 13.2 13.2" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.044c.101-.116.433-.506.549-.68.116-.173.231-.144.39-.086s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824z"/></svg>
+        Copiar WhatsApp
       </button>
+      <button class="btn" id="btn-dl" onclick="dlPNG()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span id="btn-dl-l">Descargar PNG</span>
+      </button>
+      <button class="btn" id="btn-share" onclick="nativeShare()" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Compartir
+      </button>
+      <button class="btn btn-quiet" onclick="resetDay()">Reiniciar Día</button>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════════════════════════════════════
-       PANEL 1: FORMULARIO DE CAPTURA RÁPIDA (Optimizada para móviles)
-       ════════════════════════════════════════════════════════════════════════ -->
-  <div class="view-panel active" id="view-capture">
-    
-    <!-- 1. Ventas & Metas (Diario y MTD) -->
-    <div class="capture-card">
-      <div class="capture-card-header">
-        <div class="capture-card-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--v-red)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          1. Metas y Avance de Ventas
-        </div>
-        <span class="capture-badge">Diario & Acumulado</span>
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL: CAPTURA DE DATOS
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="panel on" id="p-cap" role="tabpanel">
+    <div class="cap">
+      <div class="cap-main">
+
+        <!-- 1. Ventas -->
+        <section class="ccard">
+          <div class="ccard-head"><h2 class="ccard-title">Metas y Avance de Ventas</h2><span class="badge">Diario y MTD</span></div>
+          <div class="fgrid">
+            <div class="fgroup"><label class="flabel" for="i-v-act">Ventas Diarias ($)</label><input type="number" class="finput" id="i-v-act" step="100" min="0" inputmode="decimal" oninput="sync()" placeholder="0.00"></div>
+            <div class="fgroup"><label class="flabel" for="i-v-obj">Meta Venta Día ($)</label><input type="number" class="finput" id="i-v-obj" step="500" min="0" inputmode="decimal" oninput="sync()" placeholder="52225.80"></div>
+            <div class="fgroup"><label class="flabel" for="i-u-act">Motos Vendidas Hoy</label>
+              <div class="stepper"><button class="stepper-btn" aria-label="Restar moto vendida" onclick="step('i-u-act',-1)">−</button><input type="number" class="stepper-val" id="i-u-act" min="0" value="0" inputmode="numeric" oninput="sync()"><button class="stepper-btn" aria-label="Sumar moto vendida" onclick="step('i-u-act',1)">+</button></div>
+            </div>
+            <div class="fgroup"><label class="flabel" for="i-u-obj">Meta Unidades Día</label>
+              <div class="stepper"><button class="stepper-btn" aria-label="Restar a la meta" onclick="step('i-u-obj',-1)">−</button><input type="number" class="stepper-val" id="i-u-obj" min="0" value="3" inputmode="numeric" oninput="sync()"><button class="stepper-btn" aria-label="Sumar a la meta" onclick="step('i-u-obj',1)">+</button></div>
+            </div>
+          </div>
+          <div class="dash-div">
+            <div class="dash-div-title">Acumulado del Mes (MTD)</div>
+            <div class="fgrid">
+              <div class="fgroup"><label class="flabel" for="i-mv-act">Venta Acum. Mes ($)</label><input type="number" class="finput" id="i-mv-act" step="1000" min="0" inputmode="decimal" oninput="sync()" placeholder="0"></div>
+              <div class="fgroup"><label class="flabel" for="i-mv-obj">Cuota Mensual ($)</label><input type="number" class="finput" id="i-mv-obj" step="5000" min="0" inputmode="decimal" oninput="sync()" placeholder="1200000"></div>
+              <div class="fgroup"><label class="flabel" for="i-mu-act">Motos Acum. Mes</label><input type="number" class="finput" id="i-mu-act" min="0" step="1" inputmode="numeric" oninput="sync()" placeholder="0"></div>
+              <div class="fgroup"><label class="flabel" for="i-mu-obj">Meta Motos Mes</label><input type="number" class="finput" id="i-mu-obj" min="0" step="1" inputmode="numeric" oninput="sync()" placeholder="60"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Financieras -->
+        <section class="ccard">
+          <div class="ccard-head"><h2 class="ccard-title">Financieras de Crédito</h2><span class="badge">VC · MK · FG</span></div>
+          <table class="qtable cols-3">
+            <thead><tr><th>Financiera</th><th>Solicitudes</th><th>Colocadas</th><th>Rechazos</th></tr></thead>
+            <tbody id="cap-fin"></tbody>
+          </table>
+        </section>
+
+        <!-- 3. Tráfico -->
+        <section class="ccard">
+          <div class="ccard-head"><h2 class="ccard-title">Tráfico y Prospección</h2><span class="badge">Meta: 60 Visitas · 12 Leads</span></div>
+          <table class="qtable cols-2">
+            <thead><tr><th>Canal</th><th>Visitas / Contactos</th><th>Leads Calificados</th></tr></thead>
+            <tbody id="cap-traffic"></tbody>
+          </table>
+        </section>
+
+        <!-- 4. Comentarios -->
+        <section class="ccard">
+          <div class="ccard-head"><h2 class="ccard-title">Comentarios del Cierre</h2><span class="badge" id="cc-count">0 / 250</span></div>
+          <textarea class="comment-box" id="i-comm" maxlength="250" aria-label="Comentarios del cierre" placeholder="Eventos relevantes: quincena, promotores de crédito, clima, modelos cotizados..." oninput="onComm()"></textarea>
+        </section>
       </div>
 
-      <div class="form-grid-4">
-        <!-- Venta Diaria -->
-        <div class="form-group">
-          <label class="form-label">
-            Ventas Diarias ($)
-            <span class="helper">Facturado hoy</span>
-          </label>
-          <input type="number" class="input-box" id="inp-ventas-act" step="100" min="0" oninput="onDataChange()" placeholder="0.00">
+      <!-- Tablero en vivo -->
+      <aside class="live" aria-label="Tablero en vivo">
+        <div class="live-head"><h2 class="ccard-title">Tablero en vivo</h2></div>
+        <div class="leds" data-leds></div>
+        <div class="gauge" style="margin-top:12px;">
+          <canvas id="g-live" role="img"></canvas>
+          <div class="g-read"><b id="lv-p">0%</b><span>Venta del día</span></div>
         </div>
-        <div class="form-group">
-          <label class="form-label">
-            Meta Venta Día ($)
-            <span class="helper">Cuota diaria</span>
-          </label>
-          <input type="number" class="input-box" id="inp-ventas-obj" step="500" min="0" oninput="onDataChange()" placeholder="52225.80">
+        <div class="live-stats">
+          <div class="live-stat"><span>Motos hoy</span><b id="lv-u">0 / 0</b></div>
+          <div class="live-stat"><span>Cuota mes</span><b id="lv-m">0%</b></div>
+          <div class="live-stat"><span>Bateo</span><b id="lv-b">0%</b></div>
+          <div class="live-stat"><span>Leads</span><b id="lv-l">0 / 12</b></div>
         </div>
-
-        <!-- Unidades Diarias -->
-        <div class="form-group">
-          <label class="form-label">
-            Motos Vendidas Hoy
-            <span class="helper">Unidades entregadas</span>
-          </label>
-          <div class="stepper-wrap">
-            <button class="stepper-btn" onclick="stepVal('inp-unidades-act', -1)">−</button>
-            <input type="number" class="stepper-input" id="inp-unidades-act" min="0" step="1" oninput="onDataChange()" value="0">
-            <button class="stepper-btn" onclick="stepVal('inp-unidades-act', 1)">+</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">
-            Meta Unidades Día
-            <span class="helper">Objetivo</span>
-          </label>
-          <div class="stepper-wrap">
-            <button class="stepper-btn" onclick="stepVal('inp-unidades-obj', -1)">−</button>
-            <input type="number" class="stepper-input" id="inp-unidades-obj" min="0" step="1" oninput="onDataChange()" value="3">
-            <button class="stepper-btn" onclick="stepVal('inp-unidades-obj', 1)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sección MTD (Acumulado de Mes) -->
-      <div style="border-top:1px dashed var(--v-slate-200); margin-top:16px; padding-top:14px;">
-        <div style="font-family:'Barlow Condensed'; font-size:14px; font-weight:700; color:var(--v-slate-600); margin-bottom:10px; text-transform:uppercase;">
-          Acumulado del Mes en Curso (MTD)
-        </div>
-        <div class="form-grid-4">
-          <div class="form-group">
-            <label class="form-label">Venta Acumulada Mes ($)<span class="helper">Venta del 1 al día de hoy</span></label>
-            <input type="number" class="input-box" id="inp-mtd-ventas-act" step="1000" min="0" oninput="onDataChange()" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Cuota Mensual Total ($)<span class="helper">Meta de la agencia</span></label>
-            <input type="number" class="input-box" id="inp-mtd-ventas-obj" step="5000" min="0" oninput="onDataChange()" placeholder="1200000">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Motos Acumuladas Mes<span class="helper">Unidades totales mes</span></label>
-            <input type="number" class="input-box" id="inp-mtd-unidades-act" min="0" step="1" oninput="onDataChange()" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Meta Motos Mes<span class="helper">Cuota unidades</span></label>
-            <input type="number" class="input-box" id="inp-mtd-unidades-obj" min="0" step="1" oninput="onDataChange()" placeholder="60">
-          </div>
-        </div>
-      </div>
+      </aside>
     </div>
-
-    <!-- 2. Financieras (VC, MK, FG) -->
-    <div class="capture-card">
-      <div class="capture-card-header">
-        <div class="capture-card-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--v-red)" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-          2. Financieras de Crédito
-        </div>
-        <span class="capture-badge">Vento Credit & Aliados</span>
-      </div>
-
-      <div style="overflow-x:auto;">
-        <table class="quick-table">
-          <thead>
-            <tr>
-              <th style="width:25%;">Financiera</th>
-              <th style="width:25%;">Solicitudes</th>
-              <th style="width:25%;">Colocadas (Aprobadas)</th>
-              <th style="width:25%;">Rechazos</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="source-tag" style="color:var(--v-red); font-size:16px;">VC (Vento Credit)</span></td>
-              <td>
-                <div class="stepper-wrap">
-                  <button class="stepper-btn" onclick="stepVal('fin-vc-sol', -1)">−</button>
-                  <input type="number" class="stepper-input" id="fin-vc-sol" min="0" value="2" oninput="onDataChange()">
-                  <button class="stepper-btn" onclick="stepVal('fin-vc-sol', 1)">+</button>
-                </div>
-              </td>
-              <td>
-                <div class="stepper-wrap">
-                  <button class="stepper-btn" onclick="stepVal('fin-vc-act', -1)">−</button>
-                  <input type="number" class="stepper-input" id="fin-vc-act" min="0" value="1" oninput="onDataChange()">
-                  <button class="stepper-btn" onclick="stepVal('fin-vc-act', 1)">+</button>
-                </div>
-              </td>
-              <td>
-                <div class="stepper-wrap">
-                  <button class="stepper-btn" onclick="stepVal('fin-vc-rec', -1)">−</button>
-                  <input type="number" class="stepper-input" id="fin-vc-rec" min="0" value="0" oninput="onDataChange()">
-                  <button class="stepper-btn" onclick="stepVal('fin-vc-rec', 1)">+</button>
-                </div>
-              </td>
-            </tr>
-
-            <tr>
-              <td><span class="source-tag" style="font-size:16px;">MK (Mercado Crédito)</span></td>
-              <td>
-                <div class="stepper-wrap">
-                  <button class="stepper-btn" onclick="stepVal('fin-mk-sol', -1)">−</button>
-                  <input type="number" class="stepper-input" id="fin-mk-sol" min="0" value="1" oninput="onDataChange()">
-                  <button class="stepper-btn" onclick="stepVal('fin-mk-sol', 1)">+</button>
-                </div>
-              </td>
-              <td>
-                <div class="stepper-wrap">
-                  <button class="stepper-btn" onclick="stepVal('fin-mk-act', -1)">−</button>
-                  <input type="number" class="stepper-input" id="fin-mk-act" min="0" value="0" oninput="onDataChange()">
-                  <button class="stepper-btn" onclick="stepVal('fin-mk-act', 1)">+</button>
-                </div>
-              </td>
-              <td>
-                <div class="stepper-wrap">
-                  <button class="stepper-btn" onclick="stepVal('fin-mk-rec', -1)">−</button>
-                  <input type="number" class="stepper-input" id="fin-mk-rec" min="0" value="0" oninput="onDataChange()">
-                  <button class="stepper-btn" onclick="stepVal('fin-mk-rec', 1)">+</button>
-                </div>
-              </td>
-            </tr>
-
-            <tr>
-              <td><span class="source-tag" style="font-size:16px;">FG (Finagil / Galaxia)</span></td>
-              <td>
-                <div class="stepper-wrap">
-                  <button class="stepper-btn" onclick="stepVal('fin-fg-sol', -1)">−</button>
-                  <input type="number" class="stepper-input" id="fin-fg-sol" min="0" value="1" oninput="onDataChange()">
-                  <button class="stepper-btn" onclick="stepVal('fin-fg-sol', 1)">+</button>
-                </div>
-              </td>
-              <td>
-                <div class="stepper-wrap">
-                  <button class="stepper-btn" onclick="stepVal('fin-fg-act', -1)">−</button>
-                  <input type="number" class="stepper-input" id="fin-fg-act" min="0" value="0" oninput="onDataChange()">
-                  <button class="stepper-btn" onclick="stepVal('fin-fg-act', 1)">+</button>
-                </div>
-              </td>
-              <td>
-                <div class="stepper-wrap">
-                  <button class="stepper-btn" onclick="stepVal('fin-fg-rec', -1)">−</button>
-                  <input type="number" class="stepper-input" id="fin-fg-rec" min="0" value="0" oninput="onDataChange()">
-                  <button class="stepper-btn" onclick="stepVal('fin-fg-rec', 1)">+</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 3. Control de Tráfico y Fuentes -->
-    <div class="capture-card">
-      <div class="capture-card-header">
-        <div class="capture-card-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--v-red)" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          3. Control de Tráfico & Prospección
-        </div>
-        <span class="capture-badge">Meta: 60 Visitas / 12 Leads</span>
-      </div>
-
-      <div style="overflow-x:auto;">
-        <table class="quick-table">
-          <thead>
-            <tr>
-              <th style="width:40%;">Canal de Prospección</th>
-              <th style="width:30%;">Visitas / Contactos</th>
-              <th style="width:30%;">Leads Calificados</th>
-            </tr>
-          </thead>
-          <tbody id="capture-traffic-rows">
-            <!-- Se genera dinámicamente -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 4. Comentarios Operativos -->
-    <div class="capture-card">
-      <div class="capture-card-header">
-        <div class="capture-card-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--v-red)" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          4. Comentarios del Cierre
-        </div>
-        <span class="capture-badge" id="capture-char-count">0 / 250</span>
-      </div>
-      <textarea id="inp-comentarios" maxlength="250" style="width:100%; min-height:85px; padding:12px; border:1.5px solid var(--v-slate-200); border-radius:var(--radius-sm); font-family:'Barlow'; font-size:14px; color:var(--v-slate-800); background:var(--v-slate-50); resize:none;" placeholder="Anota eventos relevantes: afluencia por quincena, visita de promotores de crédito, lluvia o afectación vial, modelos con más cotizaciones..." oninput="onCommentChange(this.value)"></textarea>
-    </div>
-
   </div>
 
-  <!-- ════════════════════════════════════════════════════════════════════════
-       PANEL 2: SCORECARD EJECUTIVO (Vista final lista para captura/PNG)
-       ════════════════════════════════════════════════════════════════════════ -->
-  <div class="view-panel" id="view-scorecard">
-    
-    <div id="executive-scorecard">
-      <!-- Encabezado del Scorecard -->
-      <div class="scorecard-header">
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL: SCORECARD EJECUTIVO
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="panel" id="p-sc" role="tabpanel">
+    <div id="exec-sc">
+      <div class="sc-header">
         <div>
-          <div class="scorecard-agency" id="sc-agency-title">44 Jiutepec Morelos</div>
-          <div class="scorecard-meta">VENTO MOTORCYCLES · REPORTE OPERATIVO DIARIO</div>
+          <div class="sc-agency" id="sc-ag">44 Jiutepec Morelos</div>
+          <div class="sc-subtitle">Vento Motorcycles · Reporte Operativo Diario</div>
         </div>
-        <div class="scorecard-badge-right">
-          <div class="scorecard-date" id="sc-date-title">VIERNES, 6 DE NOVIEMBRE 2026</div>
-          <div class="scorecard-pacing" id="sc-pacing-badge">Día 6 de 30 · 20.0% del mes</div>
+        <div>
+          <div class="sc-date" id="sc-date"></div>
+          <div class="sc-pace" id="sc-pace"></div>
         </div>
       </div>
 
-      <!-- Banner Acumulado MTD (Month to Date) -->
-      <div class="mtd-banner">
-        <div class="mtd-banner-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Ritmo de Mes (MTD)
-        </div>
-        <div class="mtd-stats-group">
-          <div class="mtd-stat">
-            <span class="mtd-stat-label">Venta Acumulada</span>
-            <span class="mtd-stat-val" id="sc-mtd-ventas">$0</span>
+      <!-- Cluster -->
+      <div class="cluster">
+        <div class="leds" data-leds></div>
+        <div class="cluster-grid">
+          <div class="gauge">
+            <canvas id="g-day" role="img"></canvas>
+            <div class="g-read"><b id="ck-vp">0%</b><span>Venta del día</span><em id="ck-vs">$0.00</em></div>
           </div>
-          <div class="mtd-stat">
-            <span class="mtd-stat-label">Cuota Mensual</span>
-            <span class="mtd-stat-val" id="sc-mtd-obj" style="color:var(--v-slate-300);">$1,200,000</span>
+          <div class="gear">
+            <div class="gear-lbl">Motos hoy</div>
+            <div class="gear-main"><span class="gear-num" id="ck-u">0</span><div class="gear-of" id="ck-uo">de 0</div></div>
+            <div class="gear-row">
+              <div><span>Bateo</span><b id="ck-b">0%</b></div>
+              <div><span>Penetración</span><b id="ck-pen">0%</b></div>
+            </div>
           </div>
-          <div class="mtd-stat">
-            <span class="mtd-stat-label">Avance Cuota</span>
-            <span class="mtd-stat-val" id="sc-mtd-pct" style="color:#4ADE80;">0%</span>
-          </div>
-          <div class="mtd-stat">
-            <span class="mtd-stat-label">Unidades Mes</span>
-            <span class="mtd-stat-val" id="sc-mtd-unidades" style="color:#FBBF24;">0 / 60</span>
+          <div class="gauge">
+            <canvas id="g-mtd" role="img"></canvas>
+            <div class="g-read"><b id="ck-mp">0%</b><span>Cuota del mes</span><em id="ck-ms">Ritmo 0%</em></div>
           </div>
         </div>
       </div>
 
-      <!-- Sección 1: Objetivos del Día (4 KPIs) -->
-      <div class="section-title">Objetivos y Resultados del Día</div>
-      <div class="kpi-grid">
-        <!-- Venta Total -->
-        <div class="kpi-card">
-          <div>
-            <div class="kpi-card-top">
-              <span class="kpi-title">Ventas Totales</span>
-              <span class="pill" id="pill-ventas">0%</span>
-            </div>
-            <div class="kpi-val-main" id="sc-ventas-act">$0.00</div>
-            <div class="kpi-target-row">Meta: <span id="sc-ventas-obj">$0.00</span></div>
-          </div>
-          <div>
-            <div class="bar-track">
-              <div class="bar-fill" id="bar-ventas" style="width:0%;"></div>
-            </div>
-            <div class="kpi-footer-row">
-              <span class="kpi-pct" id="pct-ventas">0%</span>
-              <span class="kpi-diff" id="diff-ventas">Falta: $0.00</span>
-            </div>
-          </div>
+      <!-- Ruta del mes -->
+      <div class="route">
+        <div class="route-head">
+          <div class="route-title">Ritmo de Mes (MTD)</div>
+          <span class="pill" id="sc-gap">—</span>
         </div>
-
-        <!-- Unidades Vendidas -->
-        <div class="kpi-card">
-          <div>
-            <div class="kpi-card-top">
-              <span class="kpi-title">Unidades Vendidas</span>
-              <span class="pill" id="pill-unidades">0%</span>
+        <div class="road" id="road">
+          <div class="road-bed"><div class="road-dash"></div></div>
+          <div class="road-track">
+            <div class="road-fill" id="rd-fill"></div>
+            <div class="road-pace" id="rd-pace"><span id="rd-pace-l">Ritmo 0%</span></div>
+            <div class="road-moto" id="rd-moto">
+              <svg viewBox="0 0 72 44" fill="none" aria-hidden="true">
+                <path d="M15 32 31 27" stroke="#BDBDB8" stroke-width="3" stroke-linecap="round"/>
+                <path d="M57 32 47 10" stroke="#BDBDB8" stroke-width="3" stroke-linecap="round"/>
+                <path d="M47 10 40 7" stroke="#F4F4F2" stroke-width="3" stroke-linecap="round"/>
+                <path d="M26 31 7 26" stroke="#94948F" stroke-width="3.5" stroke-linecap="round"/>
+                <rect x="28" y="23" width="15" height="11" rx="2.5" fill="#3A3A3E"/>
+                <path d="M5 16 26 15 29 20 12 21Z" fill="#2C2C30"/>
+                <path d="M26 15 33 10.5C37 8.5 42 9 45 12L48 17 43 24H31Z" fill="#E10600"/>
+                <circle cx="51.5" cy="15" r="3.6" fill="#F4F4F2"/>
+                <g class="wheel"><circle cx="14" cy="32" r="9.5" fill="#0A0A0B" stroke="#F4F4F2" stroke-width="3"/><path d="M14 24v16M6 32h16" stroke="#94948F" stroke-width="1.6"/></g>
+                <g class="wheel"><circle cx="58" cy="32" r="9.5" fill="#0A0A0B" stroke="#F4F4F2" stroke-width="3"/><path d="M58 24v16M50 32h16" stroke="#94948F" stroke-width="1.6"/></g>
+              </svg>
             </div>
-            <div class="kpi-val-main" id="sc-unidades-act">0</div>
-            <div class="kpi-target-row">Meta: <span id="sc-unidades-obj">3</span> motos</div>
           </div>
-          <div>
-            <div class="bar-track">
-              <div class="bar-fill" id="bar-unidades" style="width:0%;"></div>
-            </div>
-            <div class="kpi-footer-row">
-              <span class="kpi-pct" id="pct-unidades">0%</span>
-              <span class="kpi-diff" id="diff-unidades">Falta: 0</span>
-            </div>
-          </div>
+          <div class="road-finish"></div>
         </div>
-
-        <!-- Ticket Promedio -->
-        <div class="kpi-card">
-          <div>
-            <div class="kpi-card-top">
-              <span class="kpi-title">Ticket Promedio</span>
-              <span class="pill pill-ok" id="pill-ticket">AUTO</span>
-            </div>
-            <div class="kpi-val-main" id="sc-ticket-act">$0.00</div>
-            <div class="kpi-target-row">Referencia: <span>$28,000.00</span></div>
-          </div>
-          <div>
-            <div class="bar-track">
-              <div class="bar-fill" id="bar-ticket" style="width:0%;"></div>
-            </div>
-            <div class="kpi-footer-row">
-              <span class="kpi-pct" id="pct-ticket">0%</span>
-              <span class="kpi-diff" id="diff-ticket">Ventas ÷ Unidades</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Leads Generados -->
-        <div class="kpi-card">
-          <div>
-            <div class="kpi-card-top">
-              <span class="kpi-title">Leads Calificados</span>
-              <span class="pill" id="pill-leads">0%</span>
-            </div>
-            <div class="kpi-val-main" id="sc-leads-act">0</div>
-            <div class="kpi-target-row">Meta: <span id="sc-leads-obj">12</span> prospectos</div>
-          </div>
-          <div>
-            <div class="bar-track">
-              <div class="bar-fill" id="bar-leads" style="width:0%;"></div>
-            </div>
-            <div class="kpi-footer-row">
-              <span class="kpi-pct" id="pct-leads">0%</span>
-              <span class="kpi-diff" id="diff-leads">∑ Fuentes Tráfico</span>
-            </div>
-          </div>
+        <div class="mtd-stats">
+          <div><span class="mtd-stat-lbl">Venta Acumulada</span><span class="mtd-stat-val" id="sc-mtd-v">$0</span></div>
+          <div><span class="mtd-stat-lbl">Cuota Mensual</span><span class="mtd-stat-val" id="sc-mtd-o">$0</span></div>
+          <div><span class="mtd-stat-lbl">Avance Cuota</span><span class="mtd-stat-val" id="sc-mtd-p">0%</span></div>
+          <div><span class="mtd-stat-lbl">Motos Mes</span><span class="mtd-stat-val" id="sc-mtd-u">0 / 0</span></div>
         </div>
       </div>
 
-      <!-- Sección 2: Financieras Colocadas -->
-      <div class="section-title">Financieras Colocadas y Bateo</div>
-      <div class="fin-cards-grid" id="sc-fin-grid">
-        <!-- Generado en JS -->
-      </div>
-      <div class="fin-summary-bar">
-        <div class="fin-summary-item">
-          <span class="label">Total Solicitudes:</span>
-          <span class="val" id="sc-fin-tot-sol">0</span>
-        </div>
-        <div class="fin-summary-item">
-          <span class="label">Total Colocadas:</span>
-          <span class="val" id="sc-fin-tot-col" style="color:var(--ok-text);">0</span>
-        </div>
-        <div class="fin-summary-item">
-          <span class="label">Total Rechazos:</span>
-          <span class="val" id="sc-fin-tot-rec" style="color:var(--bad-text);">0</span>
-        </div>
-        <div class="fin-summary-item">
-          <span class="label">Bateo / Aprobación:</span>
-          <span class="val" id="sc-fin-tot-bateo">0%</span>
-        </div>
-        <div class="fin-summary-item" style="border-left:2px solid var(--v-slate-300); padding-left:12px;">
-          <span class="label">Penetración de Crédito:</span>
-          <span class="val" id="sc-fin-penetracion" style="color:var(--v-red);">0%</span>
-        </div>
-      </div>
+      <!-- KPI Grid -->
+      <div class="sec-title">Resultados del Día</div>
+      <div class="kpi-grid" id="kpi-grid"></div>
 
-      <!-- Sección 3: Control de Tráfico & Prospección -->
-      <div class="section-title">Control de Tráfico y Embudo de Prospección</div>
-      <div class="exec-table-wrap">
-        <table class="exec-table">
-          <thead>
-            <tr>
-              <th>Canal de Prospección</th>
-              <th style="text-align:center;">Visitas / Contactos</th>
-              <th style="text-align:center;">Leads Calificados</th>
-              <th style="text-align:right;">Tasa de Conversión</th>
-            </tr>
-          </thead>
-          <tbody id="sc-traffic-tbody">
-            <!-- JS -->
-          </tbody>
-          <tfoot>
-            <tr>
-              <td>Totales del Día</td>
-              <td style="text-align:center;" id="sc-tot-visitas">0</td>
-              <td style="text-align:center; color:var(--v-red);" id="sc-tot-leads">0</td>
-              <td style="text-align:right;" id="sc-tot-conv">0%</td>
-            </tr>
-          </tfoot>
+      <!-- Financieras -->
+      <div class="sec-title">Financieras y Bateo de Crédito</div>
+      <div class="fin-grid" id="sc-fin"></div>
+      <div class="fin-summary" id="sc-fin-sum"></div>
+
+      <!-- Tráfico -->
+      <div class="sec-title">Embudo de Tráfico y Prospección</div>
+      <div class="etable-wrap">
+        <table class="etable">
+          <thead><tr><th>Canal</th><th class="num">Visitas</th><th class="num">Leads</th><th class="end">Conversión</th></tr></thead>
+          <tbody id="sc-traffic"></tbody>
+          <tfoot><tr><td>Totales</td><td class="num" id="sc-tv">0</td><td class="num" id="sc-tl">0</td><td class="end" id="sc-tc">0%</td></tr></tfoot>
         </table>
       </div>
 
-      <!-- Cumplimiento de Metas de Piso -->
-      <div class="meta-pills-row">
-        <div class="meta-pill">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span class="label">Interacciones de Piso (Meta 60):</span>
-          <span class="num" id="sc-meta-interac">0</span>
-          <span class="pill" id="pill-meta-interac">Pendiente</span>
-        </div>
-        <div class="meta-pill">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-          <span class="label">Leads de Piso (Meta 12):</span>
-          <span class="num" id="sc-meta-leads-num">0</span>
-          <span class="pill" id="pill-meta-leads">Pendiente</span>
-        </div>
+      <!-- Metas de Piso -->
+      <div class="meta-row">
+        <div class="meta-pill"><span class="m-lbl">Interacciones (Meta 60)</span><span class="m-num" id="sc-mi">0 / 60</span><span class="pill" id="pill-mi">—</span></div>
+        <div class="meta-pill"><span class="m-lbl">Leads (Meta 12)</span><span class="m-num" id="sc-ml">0 / 12</span><span class="pill" id="pill-ml">—</span></div>
       </div>
 
       <!-- Comentarios -->
       <div class="exec-comments">
-        <div class="exec-comments-title">Comentarios Relevantes de Operación</div>
-        <div id="sc-comments-text">Sin observaciones registradas para este turno.</div>
+        <div class="exec-comments-title">Observaciones de Operación</div>
+        <div class="exec-comments-body" id="sc-comm">Sin observaciones.</div>
       </div>
 
-      <!-- Footer Scorecard -->
-      <div class="scorecard-footer">
-        <div>Generado por Sistema de Agencias Vento · Validación de Cierre Oficial</div>
-        <div>Tablero Diario v2.0</div>
+      <div class="sc-footer">
+        <span>Sistema de Agencias Vento · Cierre Oficial</span>
+        <span>Tablero Diario v3.0</span>
       </div>
     </div>
-
   </div>
 
 </div>
 
-<!-- Toast flotante -->
-<div class="toast" id="app-toast">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-  <span id="toast-msg">Mensaje copiado con éxito</span>
-</div>
+<div class="toast" id="toast" role="status"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34D27B" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span id="toast-msg"></span></div>
 
-<!-- Biblioteca html2canvas para la descarga de PNG nítido en alta resolución -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
 <script>
-// ═════════════════════════════════════════════════════════════════════════════
-// CONSTANTES & ESTADO
-// ═════════════════════════════════════════════════════════════════════════════
-const TP_REF = 28000;
-const TRAFFIC_CHANNELS = ['Tráfico de Piso', 'Llamada', 'Redes Sociales', 'Cambaceo', 'Estrategias Adicionales'];
-const STORAGE_KEY = 'vento_scorecard_v2_data';
-
-let state = {
-  agency: '44 Jiutepec Morelos',
-  ventas: { act: 48371.93, obj: 52225.80 },
-  unidades: { act: 2, obj: 3 },
-  mtd: {
-    ventasAct: 245800,
-    ventasObj: 1200000,
-    unidadesAct: 11,
-    unidadesObj: 60
-  },
-  financieras: [
-    { id: 'vc', nombre: 'VC (Vento Credit)', sol: 2, col: 1, rec: 0 },
-    { id: 'mk', nombre: 'MK (Mercado Crédito)', sol: 1, col: 0, rec: 0 },
-    { id: 'fg', nombre: 'FG (Finagil / Galaxia)', sol: 1, col: 0, rec: 0 }
-  ],
-  traffic: [
-    { fuente: 'Tráfico de Piso', visitas: 6, leads: 2 },
-    { fuente: 'Llamada', visitas: 0, leads: 0 },
-    { fuente: 'Redes Sociales', visitas: 0, leads: 0 },
-    { fuente: 'Cambaceo', visitas: 0, leads: 0 },
-    { fuente: 'Estrategias Adicionales', visitas: 0, leads: 0 }
-  ],
-  comentarios: 'Visita de promotor Vento Credit, activación en plaza.'
+/* ═══════════════════════════════════════════════════════════════
+   STATE & CONSTANTS
+   ═══════════════════════════════════════════════════════════════ */
+const TP=28000, KEY='vento_sc_v3', NLED=20;
+const THEMES={
+  dark:{bg:'#0A0A0B',ok:'#34D27B',warn:'#FFB224',bad:'#FF5A47',ink:'#F4F4F2',ink3:'#94948F',brand:'#E10600',tick:'rgba(255,255,255,0.32)',hub:'#1F1F22',hubLine:'rgba(255,255,255,0.22)',glow:10},
+  light:{bg:'#F2F2EF',ok:'#0B7A41',warn:'#945600',bad:'#C8281C',ink:'#141416',ink3:'#636367',brand:'#E10600',tick:'rgba(0,0,0,0.3)',hub:'#FFFFFF',hubLine:'rgba(0,0,0,0.3)',glow:0}
 };
+const MOTO_L={'#F4F4F2':'#17171A','#BDBDB8':'#55555A','#94948F':'#77777C','#0A0A0B':'#FFFFFF'};
+let COL=THEMES.dark;
+const CALM=matchMedia('(prefers-reduced-motion: reduce)');
+let S={
+  ag:'44 Jiutepec Morelos',
+  v:{a:48371.93,o:52225.80}, u:{a:2,o:3},
+  mtd:{va:245800,vo:1200000,ua:11,uo:60},
+  fin:[{id:'vc',n:'VC (Vento Credit)',s:2,c:1,r:0},{id:'mk',n:'MK (Mercado Crédito)',s:1,c:0,r:0},{id:'fg',n:'FG (Finagil / Galaxia)',s:1,c:0,r:0}],
+  tr:[{f:'Tráfico de Piso',vi:6,le:2},{f:'Llamada',vi:0,le:0},{f:'Redes Sociales',vi:0,le:0},{f:'Cambaceo',vi:0,le:0},{f:'Estrategias Adicionales',vi:0,le:0}],
+  comm:'Visita de promotor Vento Credit, activación en plaza.'
+};
+let NOANIM=false, lastPV=null, lastU=null, scSeen=false, rideT=0, toastT=0, G={};
 
-// ═════════════════════════════════════════════════════════════════════════════
-// INICIALIZACIÓN
-// ═════════════════════════════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', () => {
-  loadFromStorage();
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  load();
+  applyTheme(document.documentElement.dataset.theme==='light'?'light':'dark');
   initDates();
-  renderCaptureTrafficTable();
-  syncInputsWithState();
-  updateCalculations();
-
-  // Detectar soporte para Web Share API
-  if (navigator.share) {
-    document.getElementById('btn-native-share').style.display = 'inline-flex';
-  }
+  buildFinCapture();
+  buildTrafficCapture();
+  buildScorecard();
+  G={live:new Gauge('g-live'),day:new Gauge('g-day'),mtd:new Gauge('g-mtd')};
+  syncUI();
+  calc();
+  if(navigator.share) document.getElementById('btn-share').style.display='inline-flex';
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>Object.values(G).forEach(g=>g.draw()));
+  G.live.sweep();
 });
 
-function initDates() {
-  const d = new Date();
-  const dayName = d.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const dayCap = dayName.charAt(0).toUpperCase() + dayName.slice(1);
-  
-  document.getElementById('date-display').textContent = dayCap;
-  document.getElementById('sc-date-title').textContent = dayCap.toUpperCase();
-
-  // Pacing del mes
-  const currentDay = d.getDate();
-  const totalDaysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-  const pctMonth = Math.round((currentDay / totalDaysInMonth) * 100);
-
-  const pacingText = `Día ${currentDay} de ${totalDaysInMonth} · ${pctMonth}% del mes`;
-  document.getElementById('month-pacing-str').textContent = pacingText;
-  document.getElementById('sc-pacing-badge').textContent = pacingText;
+function applyTheme(t){
+  const light=t==='light', b=document.getElementById('btn-theme'), lbl=light?'Cambiar a tema oscuro':'Cambiar a tema claro';
+  if(light) document.documentElement.dataset.theme='light'; else delete document.documentElement.dataset.theme;
+  COL=THEMES[t];
+  document.querySelector('meta[name=theme-color]').content=COL.bg;
+  b.title=lbl; b.setAttribute('aria-label',lbl);
+  // El SVG lleva colores literales para que html2canvas los respete en el PNG
+  document.querySelectorAll('#rd-moto [stroke],#rd-moto [fill]').forEach(e=>['stroke','fill'].forEach(a=>{
+    const v=e.dataset[a]||e.getAttribute(a); if(!v||v==='none') return;
+    e.dataset[a]=v; e.setAttribute(a,light?(MOTO_L[v]||v):v);
+  }));
+  Object.values(G).forEach(g=>g.draw());
+}
+function toggleTheme(){
+  const r=document.documentElement, t=r.dataset.theme==='light'?'dark':'light';
+  r.classList.add('theming'); setTimeout(()=>r.classList.remove('theming'),300);
+  applyTheme(t);
+  try{localStorage.setItem('vento_theme',t);}catch(e){}
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// MANEJO DE VISTAS (MODO CAPTURA vs SCORECARD)
-// ═════════════════════════════════════════════════════════════════════════════
-function switchView(viewName) {
-  const tabCapture = document.getElementById('tab-btn-capture');
-  const tabScorecard = document.getElementById('tab-btn-scorecard');
-  const viewCapture = document.getElementById('view-capture');
-  const viewScorecard = document.getElementById('view-scorecard');
+function initDates(){
+  const d=new Date();
+  const s=d.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const cap=s.charAt(0).toUpperCase()+s.slice(1);
+  document.getElementById('d-main').textContent=cap;
+  document.getElementById('sc-date').textContent=cap;
+  const pt=`Día ${d.getDate()} de ${monthDays(d)} · ${pacePct()}% del mes`;
+  document.getElementById('d-pace').textContent=pt;
+  document.getElementById('sc-pace').textContent=pt;
+}
+function monthDays(d){return new Date(d.getFullYear(),d.getMonth()+1,0).getDate();}
+function pacePct(){const d=new Date();return Math.round((d.getDate()/monthDays(d))*100);}
 
-  if (viewName === 'capture') {
-    tabCapture.classList.add('active');
-    tabScorecard.classList.remove('active');
-    viewCapture.classList.add('active');
-    viewScorecard.classList.remove('active');
-  } else {
-    tabScorecard.classList.add('active');
-    tabCapture.classList.remove('active');
-    viewScorecard.classList.add('active');
-    viewCapture.classList.remove('active');
-    updateCalculations(); // Actualiza antes de mostrar
+/* ═══════════════════════════════════════════════════════════════
+   INSTRUMENTOS
+   ═══════════════════════════════════════════════════════════════ */
+const GMAX=120, GA0=Math.PI*0.75, GSW=Math.PI*1.5;
+class Gauge{
+  constructor(id){
+    this.c=document.getElementById(id); this.x=this.c.getContext('2d');
+    this.v=0; this.t=0; this.want=0; this.vel=0; this.pace=null; this.raf=0; this.last=0; this.sw=false;
+    new ResizeObserver(()=>this.draw()).observe(this.c);
   }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// RENDER & SINCRONIZACIÓN DE INPUTS
-// ═════════════════════════════════════════════════════════════════════════════
-function renderCaptureTrafficTable() {
-  const tbody = document.getElementById('capture-traffic-rows');
-  tbody.innerHTML = '';
-
-  state.traffic.forEach((t, i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><span class="source-tag">${t.fuente}</span></td>
-      <td>
-        <div class="stepper-wrap">
-          <button class="stepper-btn" onclick="stepTraffic(${i}, 'visitas', -1)">−</button>
-          <input type="number" class="stepper-input" id="inp-tr-visitas-${i}" min="0" value="${t.visitas}" oninput="onTrafficInput(${i}, 'visitas', this.value)">
-          <button class="stepper-btn" onclick="stepTraffic(${i}, 'visitas', 1)">+</button>
-        </div>
-      </td>
-      <td>
-        <div class="stepper-wrap">
-          <button class="stepper-btn" onclick="stepTraffic(${i}, 'leads', -1)">−</button>
-          <input type="number" class="stepper-input" id="inp-tr-leads-${i}" min="0" value="${t.leads}" oninput="onTrafficInput(${i}, 'leads', this.value)">
-          <button class="stepper-btn" onclick="stepTraffic(${i}, 'leads', 1)">+</button>
-        </div>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function syncInputsWithState() {
-  document.getElementById('agency-select').value = state.agency;
-  document.getElementById('hdr-agency-name').textContent = state.agency;
-  document.getElementById('sc-agency-title').textContent = state.agency;
-
-  document.getElementById('inp-ventas-act').value = state.ventas.act || '';
-  document.getElementById('inp-ventas-obj').value = state.ventas.obj || '';
-  document.getElementById('inp-unidades-act').value = state.unidades.act;
-  document.getElementById('inp-unidades-obj').value = state.unidades.obj;
-
-  document.getElementById('inp-mtd-ventas-act').value = state.mtd.ventasAct || '';
-  document.getElementById('inp-mtd-ventas-obj').value = state.mtd.ventasObj || '';
-  document.getElementById('inp-mtd-unidades-act').value = state.mtd.unidadesAct || '';
-  document.getElementById('inp-mtd-unidades-obj').value = state.mtd.unidadesObj || '';
-
-  // Financieras
-  const fVC = state.financieras.find(f => f.id === 'vc');
-  if (fVC) {
-    document.getElementById('fin-vc-sol').value = fVC.sol;
-    document.getElementById('fin-vc-act').value = fVC.col;
-    document.getElementById('fin-vc-rec').value = fVC.rec;
+  set(t){this.want=Math.max(0,Math.min(t,GMAX)); if(!this.sw){this.t=this.want; this.run();}}
+  snap(){cancelAnimationFrame(this.raf); this.raf=0; this.sw=false; this.t=this.want; this.v=this.t; this.vel=0; this.draw();}
+  from0(){this.v=0; this.vel=0; this.run();}
+  sweep(){ // autoprueba de encendido: la aguja sube al tope y regresa al valor
+    if(CALM.matches||NOANIM){this.snap();return;}
+    this.v=0; this.vel=0; this.t=GMAX; this.sw=true; this.run();
+    setTimeout(()=>{if(!this.sw)return; this.sw=false; this.t=this.want; this.run();},620);
   }
-  const fMK = state.financieras.find(f => f.id === 'mk');
-  if (fMK) {
-    document.getElementById('fin-mk-sol').value = fMK.sol;
-    document.getElementById('fin-mk-act').value = fMK.col;
-    document.getElementById('fin-mk-rec').value = fMK.rec;
+  run(){
+    if(CALM.matches||NOANIM){this.snap();return;}
+    if(this.raf) return;
+    this.last=performance.now();
+    const tick=n=>{
+      const dt=Math.min((n-this.last)/1000,0.033); this.last=n;
+      this.vel+=((this.t-this.v)*90-this.vel*13)*dt; this.v+=this.vel*dt;
+      this.draw();
+      if(Math.abs(this.t-this.v)<0.05&&Math.abs(this.vel)<0.2){this.v=this.t;this.vel=0;this.draw();this.raf=0;return;}
+      this.raf=requestAnimationFrame(tick);
+    };
+    this.raf=requestAnimationFrame(tick);
   }
-  const fFG = state.financieras.find(f => f.id === 'fg');
-  if (fFG) {
-    document.getElementById('fin-fg-sol').value = fFG.sol;
-    document.getElementById('fin-fg-act').value = fFG.col;
-    document.getElementById('fin-fg-rec').value = fFG.rec;
-  }
-
-  // Comentarios
-  const commBox = document.getElementById('inp-comentarios');
-  commBox.value = state.comentarios || '';
-  document.getElementById('capture-char-count').textContent = `${commBox.value.length} / 250`;
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// EVENTOS DE CAMBIO
-// ═════════════════════════════════════════════════════════════════════════════
-function onAgencyChange(val) {
-  state.agency = val;
-  document.getElementById('hdr-agency-name').textContent = val;
-  document.getElementById('sc-agency-title').textContent = val;
-  saveToStorage();
-}
-
-function stepVal(id, delta) {
-  const el = document.getElementById(id);
-  let val = parseInt(el.value, 10) || 0;
-  val = Math.max(0, val + delta);
-  el.value = val;
-  onDataChange();
-}
-
-function stepTraffic(index, field, delta) {
-  let val = state.traffic[index][field] + delta;
-  val = Math.max(0, val);
-  state.traffic[index][field] = val;
-  document.getElementById(`inp-tr-${field}-${index}`).value = val;
-  onDataChange();
-}
-
-function onTrafficInput(index, field, val) {
-  state.traffic[index][field] = Math.max(0, parseInt(val, 10) || 0);
-  onDataChange();
-}
-
-function onCommentChange(val) {
-  state.comentarios = val;
-  document.getElementById('capture-char-count').textContent = `${val.length} / 250`;
-  saveToStorage();
-}
-
-function onDataChange() {
-  // Extraer valores de los inputs
-  state.ventas.act = parseFloat(document.getElementById('inp-ventas-act').value) || 0;
-  state.ventas.obj = parseFloat(document.getElementById('inp-ventas-obj').value) || 0;
-  state.unidades.act = parseInt(document.getElementById('inp-unidades-act').value, 10) || 0;
-  state.unidades.obj = parseInt(document.getElementById('inp-unidades-obj').value, 10) || 0;
-
-  state.mtd.ventasAct = parseFloat(document.getElementById('inp-mtd-ventas-act').value) || 0;
-  state.mtd.ventasObj = parseFloat(document.getElementById('inp-mtd-ventas-obj').value) || 0;
-  state.mtd.unidadesAct = parseInt(document.getElementById('inp-mtd-unidades-act').value, 10) || 0;
-  state.mtd.unidadesObj = parseInt(document.getElementById('inp-mtd-unidades-obj').value, 10) || 0;
-
-  // Financieras
-  state.financieras[0].sol = parseInt(document.getElementById('fin-vc-sol').value, 10) || 0;
-  state.financieras[0].col = parseInt(document.getElementById('fin-vc-act').value, 10) || 0;
-  state.financieras[0].rec = parseInt(document.getElementById('fin-vc-rec').value, 10) || 0;
-
-  state.financieras[1].sol = parseInt(document.getElementById('fin-mk-sol').value, 10) || 0;
-  state.financieras[1].col = parseInt(document.getElementById('fin-mk-act').value, 10) || 0;
-  state.financieras[1].rec = parseInt(document.getElementById('fin-mk-rec').value, 10) || 0;
-
-  state.financieras[2].sol = parseInt(document.getElementById('fin-fg-sol').value, 10) || 0;
-  state.financieras[2].col = parseInt(document.getElementById('fin-fg-act').value, 10) || 0;
-  state.financieras[2].rec = parseInt(document.getElementById('fin-fg-rec').value, 10) || 0;
-
-  saveToStorage();
-  updateCalculations();
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// CÁLCULOS & ACTUALIZACIÓN DE SCORECARD EJECUTIVO
-// ═════════════════════════════════════════════════════════════════════════════
-function fmtCur(v) {
-  return '$' + Number(v).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function fmtInt(v) {
-  return Number(v).toLocaleString('es-MX');
-}
-function calcPct(act, obj) {
-  if (!obj || obj <= 0) return 0;
-  return Math.round((act / obj) * 100);
-}
-function getSemPillClass(p) {
-  if (p >= 80) return 'pill-ok';
-  if (p >= 50) return 'pill-warn';
-  return 'pill-bad';
-}
-function getBarClass(p) {
-  if (p >= 80) return 'bar-ok';
-  if (p >= 50) return 'bar-warn';
-  return 'bar-bad';
-}
-
-function updateCalculations() {
-  // 1. Total Leads y Visitas
-  const totVisitas = state.traffic.reduce((sum, r) => sum + r.visitas, 0);
-  const totLeads = state.traffic.reduce((sum, r) => sum + r.leads, 0);
-
-  // 2. Ticket Promedio
-  const ticketAct = state.unidades.act > 0 ? (state.ventas.act / state.unidades.act) : 0;
-  const pctVentas = calcPct(state.ventas.act, state.ventas.obj);
-  const pctUnidades = calcPct(state.unidades.act, state.unidades.obj);
-  const pctTicket = calcPct(ticketAct, TP_REF);
-  const pctLeads = calcPct(totLeads, 12);
-
-  // --- Actualizar Scorecard Ejecutivo: MTD Banner ---
-  document.getElementById('sc-mtd-ventas').textContent = fmtCur(state.mtd.ventasAct);
-  document.getElementById('sc-mtd-obj').textContent = fmtCur(state.mtd.ventasObj);
-  const pctMTD = calcPct(state.mtd.ventasAct, state.mtd.ventasObj);
-  document.getElementById('sc-mtd-pct').textContent = `${pctMTD}%`;
-  document.getElementById('sc-mtd-unidades').textContent = `${state.mtd.unidadesAct} / ${state.mtd.unidadesObj}`;
-
-  // --- Actualizar Scorecard Ejecutivo: 4 KPIs ---
-  // Ventas
-  document.getElementById('sc-ventas-act').textContent = fmtCur(state.ventas.act);
-  document.getElementById('sc-ventas-obj').textContent = fmtCur(state.ventas.obj);
-  document.getElementById('pct-ventas').textContent = `${pctVentas}%`;
-  document.getElementById('pill-ventas').textContent = `${pctVentas}%`;
-  document.getElementById('pill-ventas').className = `pill ${getSemPillClass(pctVentas)}`;
-  document.getElementById('bar-ventas').style.width = `${Math.min(pctVentas, 100)}%`;
-  document.getElementById('bar-ventas').className = `bar-fill ${getBarClass(pctVentas)}`;
-  document.getElementById('diff-ventas').textContent = state.ventas.act >= state.ventas.obj ? '✓ Cumplida' : `Falta: ${fmtCur(state.ventas.obj - state.ventas.act)}`;
-
-  // Unidades
-  document.getElementById('sc-unidades-act').textContent = fmtInt(state.unidades.act);
-  document.getElementById('sc-unidades-obj').textContent = fmtInt(state.unidades.obj);
-  document.getElementById('pct-unidades').textContent = `${pctUnidades}%`;
-  document.getElementById('pill-unidades').textContent = `${pctUnidades}%`;
-  document.getElementById('pill-unidades').className = `pill ${getSemPillClass(pctUnidades)}`;
-  document.getElementById('bar-unidades').style.width = `${Math.min(pctUnidades, 100)}%`;
-  document.getElementById('bar-unidades').className = `bar-fill ${getBarClass(pctUnidades)}`;
-  document.getElementById('diff-unidades').textContent = state.unidades.act >= state.unidades.obj ? '✓ Cumplida' : `Faltan: ${state.unidades.obj - state.unidades.act}`;
-
-  // Ticket Promedio
-  document.getElementById('sc-ticket-act').textContent = fmtCur(ticketAct);
-  document.getElementById('pct-ticket').textContent = `${pctTicket}%`;
-  document.getElementById('bar-ticket').style.width = `${Math.min(pctTicket, 100)}%`;
-  document.getElementById('bar-ticket').className = `bar-fill ${getBarClass(pctTicket)}`;
-
-  // Leads
-  document.getElementById('sc-leads-act').textContent = fmtInt(totLeads);
-  document.getElementById('pct-leads').textContent = `${pctLeads}%`;
-  document.getElementById('pill-leads').textContent = `${pctLeads}%`;
-  document.getElementById('pill-leads').className = `pill ${getSemPillClass(pctLeads)}`;
-  document.getElementById('bar-leads').style.width = `${Math.min(pctLeads, 100)}%`;
-  document.getElementById('bar-leads').className = `bar-fill ${getBarClass(pctLeads)}`;
-  document.getElementById('diff-leads').textContent = totLeads >= 12 ? '✓ Meta alcanzada' : `Faltan: ${12 - totLeads}`;
-
-  // --- Actualizar Financieras Grid ---
-  renderExecFinancieras();
-
-  // --- Actualizar Tabla de Tráfico ---
-  renderExecTrafficTable(totVisitas, totLeads);
-
-  // --- Actualizar Comentarios ---
-  document.getElementById('sc-comments-text').textContent = state.comentarios && state.comentarios.trim().length > 0
-    ? state.comentarios
-    : 'Sin observaciones adicionales registradas para este turno.';
-}
-
-function renderExecFinancieras() {
-  const container = document.getElementById('sc-fin-grid');
-  container.innerHTML = '';
-
-  let totSol = 0;
-  let totCol = 0;
-  let totRec = 0;
-
-  state.financieras.forEach(f => {
-    totSol += f.sol;
-    totCol += f.col;
-    totRec += f.rec;
-
-    const bateo = f.sol > 0 ? Math.round((f.col / f.sol) * 100) : 0;
-    const block = document.createElement('div');
-    block.className = 'fin-block';
-    block.innerHTML = `
-      <div class="fin-block-header">
-        <span class="fin-name">${f.nombre}</span>
-        <span class="pill ${getSemPillClass(bateo)}">${bateo}% Bateo</span>
-      </div>
-      <div class="fin-stats-row">
-        <div class="fin-stat-item">
-          <div class="fin-stat-val">${f.sol}</div>
-          <div class="fin-stat-label">Solicitudes</div>
-        </div>
-        <div class="fin-stat-item">
-          <div class="fin-stat-val" style="color:var(--ok-text);">${f.col}</div>
-          <div class="fin-stat-label">Colocadas</div>
-        </div>
-        <div class="fin-stat-item">
-          <div class="fin-stat-val" style="color:var(--bad-text);">${f.rec}</div>
-          <div class="fin-stat-label">Rechazos</div>
-        </div>
-      </div>
-    `;
-    container.appendChild(block);
-  });
-
-  const bateoGlobal = totSol > 0 ? Math.round((totCol / totSol) * 100) : 0;
-  const penetracion = state.unidades.act > 0 ? Math.round((totCol / state.unidades.act) * 100) : 0;
-
-  document.getElementById('sc-fin-tot-sol').textContent = totSol;
-  document.getElementById('sc-fin-tot-col').textContent = totCol;
-  document.getElementById('sc-fin-tot-rec').textContent = totRec;
-  document.getElementById('sc-fin-tot-bateo').textContent = `${bateoGlobal}%`;
-  document.getElementById('sc-fin-penetracion').textContent = `${penetracion}%`;
-}
-
-function renderExecTrafficTable(totVisitas, totLeads) {
-  const tbody = document.getElementById('sc-traffic-tbody');
-  tbody.innerHTML = '';
-
-  state.traffic.forEach(t => {
-    const conv = t.visitas > 0 ? Math.round((t.leads / t.visitas) * 100) : 0;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="font-weight:600; color:var(--v-slate-800);">${t.fuente}</td>
-      <td style="text-align:center;">${t.visitas}</td>
-      <td style="text-align:center; font-weight:700;">${t.leads}</td>
-      <td style="text-align:right;">
-        <span class="pill ${getSemPillClass(conv)}">${conv}%</span>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  document.getElementById('sc-tot-visitas').textContent = totVisitas;
-  document.getElementById('sc-tot-leads').textContent = totLeads;
-  const totConv = totVisitas > 0 ? Math.round((totLeads / totVisitas) * 100) : 0;
-  document.getElementById('sc-tot-conv').textContent = `${totConv}%`;
-
-  // Metas de piso pills
-  document.getElementById('sc-meta-interac').textContent = `${totVisitas} / 60`;
-  const vOk = totVisitas >= 60;
-  const pInterac = document.getElementById('pill-meta-interac');
-  pInterac.textContent = vOk ? '✓ Cumplida' : 'Faltan ' + (60 - totVisitas);
-  pInterac.className = `pill ${vOk ? 'pill-ok' : 'pill-bad'}`;
-
-  document.getElementById('sc-meta-leads-num').textContent = `${totLeads} / 12`;
-  const lOk = totLeads >= 12;
-  const pLeads = document.getElementById('pill-meta-leads');
-  pLeads.textContent = lOk ? '✓ Cumplida' : 'Faltan ' + (12 - totLeads);
-  pLeads.className = `pill ${lOk ? 'pill-ok' : 'pill-bad'}`;
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// EXPORTACIÓN MULTI-CANAL
-// ═════════════════════════════════════════════════════════════════════════════
-function generateWhatsAppText() {
-  const totVisitas = state.traffic.reduce((sum, r) => sum + r.visitas, 0);
-  const totLeads = state.traffic.reduce((sum, r) => sum + r.leads, 0);
-  const ticketAct = state.unidades.act > 0 ? (state.ventas.act / state.unidades.act) : 0;
-  const pctVentas = calcPct(state.ventas.act, state.ventas.obj);
-  const pctUnidades = calcPct(state.unidades.act, state.unidades.obj);
-
-  let totFinSol = 0, totFinCol = 0, totFinRec = 0;
-  state.financieras.forEach(f => { totFinSol += f.sol; totFinCol += f.col; totFinRec += f.rec; });
-  const bateoGlobal = totFinSol > 0 ? Math.round((totFinCol / totFinSol) * 100) : 0;
-  const penetracion = state.unidades.act > 0 ? Math.round((totFinCol / state.unidades.act) * 100) : 0;
-
-  const d = new Date();
-  const fechaStr = d.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-  const semVentas = pctVentas >= 80 ? '🟢' : pctVentas >= 50 ? '🟡' : '🔴';
-  const semUnidades = pctUnidades >= 80 ? '🟢' : pctUnidades >= 50 ? '🟡' : '🔴';
-
-  let msg = `🏁 *VENTO · TABLERO DE CONTROL DIARIO*\n`;
-  msg += `📍 *Agencia:* ${state.agency}\n`;
-  msg += `📅 *Fecha:* ${fechaStr}\n\n`;
-
-  msg += `💰 *VENTAS & UNIDADES (DIARIO)*\n`;
-  msg += `• *Ventas:* ${fmtCur(state.ventas.act)} / Meta: ${fmtCur(state.ventas.obj)} (${pctVentas}% ${semVentas})\n`;
-  msg += `• *Motos:* ${state.unidades.act} / Meta: ${state.unidades.obj} (${pctUnidades}% ${semUnidades})\n`;
-  msg += `• *Ticket Promedio:* ${fmtCur(ticketAct)} (Ref: $28,000)\n\n`;
-
-  if (state.mtd.ventasObj > 0) {
-    const pctMTD = calcPct(state.mtd.ventasAct, state.mtd.ventasObj);
-    msg += `📈 *ACUMULADO MES (MTD)*\n`;
-    msg += `• Venta Mes: ${fmtCur(state.mtd.ventasAct)} / Meta: ${fmtCur(state.mtd.ventasObj)} (${pctMTD}%)\n`;
-    msg += `• Motos Mes: ${state.mtd.unidadesAct} / Meta: ${state.mtd.unidadesObj}\n\n`;
-  }
-
-  msg += `🏦 *FINANCIERAS (Bateo & Colocación)*\n`;
-  state.financieras.forEach(f => {
-    const bat = f.sol > 0 ? Math.round((f.col / f.sol) * 100) : 0;
-    msg += `• ${f.nombre}: ${f.col} colocada(s) · ${f.sol} sol. (${bat}% bateo)\n`;
-  });
-  msg += `👉 *Total Colocadas:* ${totFinCol} / ${totFinSol} solicitudes (${bateoGlobal}% bateo)\n`;
-  msg += `👉 *Penetración Crédito:* ${penetracion}% de las unidades vendidas\n\n`;
-
-  msg += `🚦 *TRÁFICO & EMBUDO*\n`;
-  state.traffic.forEach(t => {
-    const c = t.visitas > 0 ? Math.round((t.leads / t.visitas) * 100) : 0;
-    msg += `• ${t.fuente}: ${t.visitas} visitas → ${t.leads} leads (${c}%)\n`;
-  });
-  msg += `👉 *Total Tráfico:* ${totVisitas} / Meta 60 ${totVisitas >= 60 ? '🟢' : '🔴'}\n`;
-  msg += `👉 *Total Leads:* ${totLeads} / Meta 12 ${totLeads >= 12 ? '🟢' : '🔴'}\n\n`;
-
-  if (state.comentarios && state.comentarios.trim().length > 0) {
-    msg += `📝 *OBSERVACIONES:*\n${state.comentarios.trim()}\n`;
-  }
-
-  return msg;
-}
-
-function copyWhatsAppReport() {
-  const text = generateWhatsAppText();
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('✓ Resumen copiado para WhatsApp listo para pegar');
-  }).catch(() => {
-    showToast('Error al copiar al portapapeles');
-  });
-}
-
-function nativeShareScorecard() {
-  if (navigator.share) {
-    navigator.share({
-      title: `Scorecard Vento - ${state.agency}`,
-      text: generateWhatsAppText()
-    }).catch(err => console.log('Share error:', err));
-  } else {
-    copyWhatsAppReport();
-  }
-}
-
-function downloadScorecardPNG() {
-  const btn = document.getElementById('btn-download-img');
-  const originalText = btn.innerHTML;
-  btn.innerHTML = 'Generando Imagen...';
-  btn.style.opacity = '0.7';
-  btn.style.pointerEvents = 'none';
-
-  // Aseguramos que la vista activa sea el scorecard
-  switchView('scorecard');
-
-  setTimeout(() => {
-    const target = document.getElementById('executive-scorecard');
-    html2canvas(target, {
-      scale: 2, // Calidad retina 2x nítida para pantallas móviles
-      backgroundColor: '#FFFFFF',
-      useCORS: true,
-      logging: false
-    }).then(canvas => {
-      const cleanAgency = state.agency.replace(/[^a-zA-Z0-9]/g, '_');
-      const d = new Date();
-      const fechaStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      
-      const link = document.createElement('a');
-      link.download = `Scorecard_Vento_${cleanAgency}_${fechaStr}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-
-      btn.innerHTML = originalText;
-      btn.style.opacity = '1';
-      btn.style.pointerEvents = 'auto';
-      showToast('✓ Imagen PNG descargada en alta resolución');
-    }).catch(err => {
-      console.error(err);
-      btn.innerHTML = originalText;
-      btn.style.opacity = '1';
-      btn.style.pointerEvents = 'auto';
-      showToast('Error al generar la imagen');
+  draw(){
+    const c=this.c, w=c.clientWidth, h=c.clientHeight; if(!w||!h) return;
+    const dpr=Math.max(devicePixelRatio||1,2), x=this.x;
+    if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);}
+    x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,w,h);
+    const cx=w/2, R=Math.min(w/2,h*0.53)-3, cy=R+3, ang=p=>GA0+GSW*Math.max(0,Math.min(p,GMAX))/GMAX, v=this.v;
+    x.lineCap='butt';
+    // Zonas: mismos cortes que pcl()
+    [[0,50,COL.bad],[50,80,COL.warn],[80,GMAX,COL.ok]].forEach(([a,b,col])=>{
+      x.beginPath(); x.arc(cx,cy,R-2,ang(a)+0.008,ang(b)-0.008); x.strokeStyle=col; x.globalAlpha=0.28; x.lineWidth=4; x.stroke();
     });
-  }, 200);
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// PERSISTENCIA LOCAL STORAGE
-// ═════════════════════════════════════════════════════════════════════════════
-function saveToStorage() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {
-    console.warn('LocalStorage error:', e);
-  }
-}
-
-function loadFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      state = Object.assign(state, parsed);
+    x.globalAlpha=1;
+    // Avance
+    if(v>0.2){
+      x.beginPath(); x.arc(cx,cy,R-2,ang(0),ang(v)); x.strokeStyle=COL[pcl(v)]; x.lineWidth=4;
+      x.shadowColor=COL[pcl(v)]; x.shadowBlur=COL.glow; x.stroke(); x.shadowBlur=0;
     }
-  } catch (e) {
-    console.warn('LocalStorage load error:', e);
+    // Marcas
+    for(let p=0;p<=GMAX;p+=5){
+      const a=ang(p), maj=p%20===0, r1=R-9, r2=r1-(maj?R*0.1:R*0.05);
+      x.beginPath(); x.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1); x.lineTo(cx+Math.cos(a)*r2,cy+Math.sin(a)*r2);
+      x.strokeStyle=p<=v?COL.ink:COL.tick; x.lineWidth=maj?2.4:1.2; x.stroke();
+    }
+    // Números
+    x.font=`600 ${Math.max(11,R*0.115)}px "Saira Condensed","Arial Narrow",sans-serif`; x.textAlign='center'; x.textBaseline='middle';
+    for(let p=0;p<=GMAX;p+=20){
+      const a=ang(p), r=R*0.69; x.fillStyle=p<=v?COL.ink:COL.ink3;
+      x.fillText(String(p),cx+Math.cos(a)*r,cy+Math.sin(a)*r);
+    }
+    // Ritmo esperado del mes
+    if(this.pace!=null){
+      const a=ang(this.pace), r=R+1, s=R*0.055;
+      x.save(); x.translate(cx+Math.cos(a)*r,cy+Math.sin(a)*r); x.rotate(a+Math.PI/2);
+      x.beginPath(); x.moveTo(0,s*1.5); x.lineTo(-s,-s*0.5); x.lineTo(s,-s*0.5); x.closePath(); x.fillStyle=COL.ink; x.fill(); x.restore();
+    }
+    // Aguja
+    const a=ang(v), L=R*0.8, T=R*0.14, b=Math.max(2.4,R*0.024);
+    x.save(); x.translate(cx,cy); x.rotate(a);
+    x.beginPath(); x.moveTo(-T,-b); x.lineTo(L,-0.8); x.lineTo(L,0.8); x.lineTo(-T,b); x.closePath();
+    x.fillStyle=COL.brand; x.shadowColor='rgba(225,6,0,0.75)'; x.shadowBlur=COL.glow; x.fill(); x.shadowBlur=0; x.restore();
+    x.beginPath(); x.arc(cx,cy,R*0.085,0,Math.PI*2); x.fillStyle=COL.hub; x.fill();
+    x.lineWidth=2; x.strokeStyle=COL.hubLine; x.stroke();
   }
 }
 
-function resetDailyData() {
-  if (!confirm('¿Deseas reiniciar los números del día de hoy? (La agencia y metas mensuales se conservarán)')) {
-    return;
-  }
-  state.ventas.act = 0;
-  state.unidades.act = 0;
-  state.financieras.forEach(f => { f.sol = 0; f.col = 0; f.rec = 0; });
-  state.traffic.forEach(t => { t.visitas = 0; t.leads = 0; });
-  state.comentarios = '';
+function setN(id,val,fmt){ // número que corre hasta su valor
+  const e=document.getElementById(id), from=e._n==null?0:e._n; e._n=val; cancelAnimationFrame(e._r);
+  if(CALM.matches||NOANIM||from===val||e.offsetParent===null){e.textContent=fmt(val);return;}
+  const t0=performance.now(), D=560;
+  const tick=n=>{
+    const k=Math.min((n-t0)/D,1), q=1-Math.pow(1-k,3);
+    e.textContent=fmt(k===1?val:from+(val-from)*q);
+    if(k<1&&!NOANIM) e._r=requestAnimationFrame(tick); else e.textContent=fmt(val);
+  };
+  e._r=requestAnimationFrame(tick);
+}
+const fp=v=>Math.round(v)+'%', fr=v=>fi(Math.round(v));
 
-  saveToStorage();
-  syncInputsWithState();
-  renderCaptureTrafficTable();
-  updateCalculations();
-  showToast('✓ Datos diarios reiniciados para nuevo turno');
+function setLeds(p,flash){
+  const on=Math.round(Math.min(p,100)/100*NLED);
+  document.querySelectorAll('[data-leds]').forEach(g=>{
+    [...g.children].forEach((l,i)=>l.classList.toggle('on',i<on));
+    if(flash){g.classList.remove('flash');void g.offsetWidth;g.classList.add('flash');setTimeout(()=>g.classList.remove('flash'),1100);}
+  });
+}
+function ride(pm){
+  const road=document.getElementById('road'), p=Math.min(pm,100), pace=pacePct();
+  if(!NOANIM&&!CALM.matches&&document.getElementById('rd-moto').style.left!==p+'%'){road.classList.add('riding');clearTimeout(rideT);rideT=setTimeout(()=>road.classList.remove('riding'),1300);}
+  document.getElementById('rd-moto').style.left=p+'%';
+  document.getElementById('rd-fill').style.width=`calc(${p}% + 108px)`;
+  const rp=document.getElementById('rd-pace');
+  rp.style.left=pace+'%'; rp.classList.toggle('flip',pace>70);
+  document.getElementById('rd-pace-l').textContent=`Ritmo ${pace}%`;
+  const gap=pm-pace, g=document.getElementById('sc-gap');
+  if(S.mtd.vo<=0){g.textContent='Sin cuota capturada';g.className='pill pill-auto';return;}
+  g.textContent=gap===0?'En ritmo':gap>0?`+${gap} pts sobre el ritmo`:`−${-gap} pts bajo el ritmo`;
+  g.className=`pill pill-${gap>=0?'ok':gap>=-10?'warn':'bad'}`;
 }
 
-function showToast(msg) {
-  const t = document.getElementById('app-toast');
-  document.getElementById('toast-msg').textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3200);
+/* ═══════════════════════════════════════════════════════════════
+   VIEWS
+   ═══════════════════════════════════════════════════════════════ */
+function go(v){
+  const sc=v==='scorecard';
+  document.getElementById('tabs').dataset.on=v;
+  document.getElementById('t-cap').classList.toggle('on',!sc);
+  document.getElementById('t-sc').classList.toggle('on',sc);
+  document.getElementById('t-cap').setAttribute('aria-selected',!sc);
+  document.getElementById('t-sc').setAttribute('aria-selected',sc);
+  document.getElementById('t-cap').tabIndex=sc?-1:0;
+  document.getElementById('t-sc').tabIndex=sc?0:-1;
+  document.getElementById('p-cap').classList.toggle('on',!sc);
+  document.getElementById('p-sc').classList.toggle('on',sc);
+  calc();
+  if(sc){
+    if(scSeen){G.day.from0();G.mtd.from0();} else {G.day.sweep();G.mtd.sweep();scSeen=true;}
+  } else G.live.from0();
 }
+
+function tabKey(e){
+  if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight') return;
+  e.preventDefault();
+  const sc=document.getElementById('tabs').dataset.on==='scorecard';
+  go(sc?'capture':'scorecard');
+  document.getElementById(sc?'t-cap':'t-sc').focus();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CAPTURE UI
+   ═══════════════════════════════════════════════════════════════ */
+function stp(id,lbl,cb,inp,val){
+  return `<div class="stepper"><button class="stepper-btn" aria-label="Restar ${lbl}" onclick="${cb.replace('$d','-1')}">−</button><input type="number" class="stepper-val" id="${id}" aria-label="${lbl}" min="0" value="${val}" inputmode="numeric" oninput="${inp}"><button class="stepper-btn" aria-label="Sumar ${lbl}" onclick="${cb.replace('$d','1')}">+</button></div>`;
+}
+function buildFinCapture(){
+  const tb=document.getElementById('cap-fin'); tb.innerHTML='';
+  S.fin.forEach(f=>{
+    const tr=document.createElement('tr');
+    const c=(k,l)=>`<td data-l="${l}">${stp(`f-${f.id}-${k}`,`${l} ${f.id.toUpperCase()}`,`step('f-${f.id}-${k}',$d)`,'sync()',f[k])}</td>`;
+    tr.innerHTML=`<td><span class="src-name">${f.n}</span></td>${c('s','Solicitudes')}${c('c','Colocadas')}${c('r','Rechazos')}`;
+    tb.appendChild(tr);
+  });
+}
+function buildTrafficCapture(){
+  const tb=document.getElementById('cap-traffic'); tb.innerHTML='';
+  S.tr.forEach((t,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span class="src-name">${t.f}</span></td>
+      <td data-l="Visitas / Contactos">${stp(`tr-v-${i}`,`visitas ${t.f}`,`stTr(${i},'vi',$d)`,`trIn(${i},'vi',this.value)`,t.vi)}</td>
+      <td data-l="Leads Calificados">${stp(`tr-l-${i}`,`leads ${t.f}`,`stTr(${i},'le',$d)`,`trIn(${i},'le',this.value)`,t.le)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function syncUI(){
+  document.getElementById('sel-ag').value=S.ag;
+  document.getElementById('hdr-name').textContent=S.ag;
+  document.getElementById('sc-ag').textContent=S.ag;
+  document.getElementById('i-v-act').value=S.v.a||'';
+  document.getElementById('i-v-obj').value=S.v.o||'';
+  document.getElementById('i-u-act').value=S.u.a;
+  document.getElementById('i-u-obj').value=S.u.o;
+  document.getElementById('i-mv-act').value=S.mtd.va||'';
+  document.getElementById('i-mv-obj').value=S.mtd.vo||'';
+  document.getElementById('i-mu-act').value=S.mtd.ua||'';
+  document.getElementById('i-mu-obj').value=S.mtd.uo||'';
+  ['vc','mk','fg'].forEach((k,i)=>{
+    const f=S.fin[i];
+    document.getElementById(`f-${k}-s`).value=f.s;
+    document.getElementById(`f-${k}-c`).value=f.c;
+    document.getElementById(`f-${k}-r`).value=f.r;
+  });
+  const cb=document.getElementById('i-comm');
+  cb.value=S.comm||'';
+  document.getElementById('cc-count').textContent=`${cb.value.length} / 250`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENTS
+   ═══════════════════════════════════════════════════════════════ */
+function chgAgency(v){S.ag=v;document.getElementById('hdr-name').textContent=v;document.getElementById('sc-ag').textContent=v;save();}
+function bump(e){if(!CALM.matches&&e.animate)e.animate([{transform:'scale(1.22)'},{transform:'scale(1)'}],{duration:200,easing:'cubic-bezier(0.16,1,0.3,1)'});}
+function step(id,d){const e=document.getElementById(id);e.value=Math.max(0,(parseInt(e.value)||0)+d);bump(e);sync();}
+function stTr(i,f,d){S.tr[i][f]=Math.max(0,S.tr[i][f]+d);const e=document.getElementById(`tr-${f==='vi'?'v':'l'}-${i}`);e.value=S.tr[i][f];bump(e);sync();}
+function trIn(i,f,v){S.tr[i][f]=Math.max(0,parseInt(v)||0);sync();}
+function onComm(){const v=document.getElementById('i-comm').value;S.comm=v;document.getElementById('cc-count').textContent=`${v.length} / 250`;save();calc();}
+
+function sync(){
+  S.v.a=gf('i-v-act');
+  S.v.o=gf('i-v-obj');
+  S.u.a=gv('i-u-act');
+  S.u.o=gv('i-u-obj');
+  S.mtd.va=gf('i-mv-act');
+  S.mtd.vo=gf('i-mv-obj');
+  S.mtd.ua=gv('i-mu-act');
+  S.mtd.uo=gv('i-mu-obj');
+  S.fin[0]={...S.fin[0],s:gv('f-vc-s'),c:gv('f-vc-c'),r:gv('f-vc-r')};
+  S.fin[1]={...S.fin[1],s:gv('f-mk-s'),c:gv('f-mk-c'),r:gv('f-mk-r')};
+  S.fin[2]={...S.fin[2],s:gv('f-fg-s'),c:gv('f-fg-c'),r:gv('f-fg-r')};
+  save(); calc();
+}
+function gv(id){return Math.max(0,parseInt(document.getElementById(id).value)||0);}
+function gf(id){return Math.max(0,parseFloat(document.getElementById(id).value)||0);}
+
+/* ═══════════════════════════════════════════════════════════════
+   CALCULATIONS & SCORECARD RENDER
+   ═══════════════════════════════════════════════════════════════ */
+function fc(v){return '$'+Number(v).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fi(v){return Number(v).toLocaleString('es-MX');}
+function pct(a,o){return (!o||o<=0)?0:Math.round((a/o)*100);}
+function pcl(p){return p>=80?'ok':p>=50?'warn':'bad';}
+
+function buildScorecard(){
+  document.querySelectorAll('[data-leds]').forEach(g=>{
+    g.innerHTML=Array.from({length:NLED},(_,i)=>`<span class="led ${pcl((i+1)/NLED*100)}"></span>`).join('');
+  });
+  document.getElementById('kpi-grid').innerHTML=[0,1,2,3].map(i=>`<div class="kpi">
+    <div class="kpi-top"><span class="kpi-label" id="k${i}-l"></span><span class="pill" id="k${i}-p"></span></div>
+    <div class="kpi-big" id="k${i}-v"></div>
+    <div class="kpi-target">Meta: <span id="k${i}-t"></span></div>
+    <div class="prog-track"><div class="prog-fill" id="k${i}-b"></div></div>
+    <div class="kpi-diff" id="k${i}-d"></div></div>`).join('');
+  document.getElementById('sc-fin').innerHTML=S.fin.map(f=>`<div class="fin-card">
+    <div class="fin-head"><span class="fin-name">${f.n}</span><span class="pill" id="fb-${f.id}"></span></div>
+    <div class="fin-row"><div><div class="fin-stat-v" id="fs-${f.id}"></div><div class="fin-stat-l">Solicitudes</div></div>
+    <div><div class="fin-stat-v" id="fc-${f.id}" style="color:var(--ok);"></div><div class="fin-stat-l">Colocadas</div></div>
+    <div><div class="fin-stat-v" id="fr-${f.id}" style="color:var(--bad);"></div><div class="fin-stat-l">Rechazos</div></div></div></div>`).join('');
+  document.getElementById('sc-fin-sum').innerHTML=[['Solicitudes','ts'],['Colocadas','tc'],['Rechazos','tr'],['Bateo','bg'],['Penetración Crédito','pen']]
+    .map(([l,k])=>`<div class="fin-s-item"><span class="fin-s-lbl">${l}</span><span class="fin-s-val" id="fsum-${k}"></span></div>`).join('');
+  document.getElementById('sc-traffic').innerHTML=S.tr.map((t,i)=>`<tr><td>${t.f}</td><td class="num" id="tv-${i}"></td><td class="num" id="tl-${i}"></td>
+    <td class="end"><span class="conv"><span class="mini"><i id="tb-${i}"></i></span><span class="pill" id="tp-${i}"></span></span></td></tr>`).join('');
+}
+
+function calc(){
+  const $=id=>document.getElementById(id);
+  const tv=S.tr.reduce((s,r)=>s+r.vi,0);
+  const tl=S.tr.reduce((s,r)=>s+r.le,0);
+  const tk=S.u.a>0?(S.v.a/S.u.a):0;
+  const pV=pct(S.v.a,S.v.o), pU=pct(S.u.a,S.u.o), pT=pct(tk,TP), pL=pct(tl,12);
+  let ts=0,tc=0,tr=0; S.fin.forEach(f=>{ts+=f.s;tc+=f.c;tr+=f.r;});
+  const bg=ts>0?Math.round((tc/ts)*100):0;
+  const pen=S.u.a>0?Math.round((tc/S.u.a)*100):0;
+  const pm=pct(S.mtd.va,S.mtd.vo), pace=pacePct();
+
+  // Instrumentos
+  G.live.set(pV); G.day.set(pV); G.mtd.pace=pace; G.mtd.set(pm);
+  G.live.c.setAttribute('aria-label',`Venta del día: ${pV}% de la meta`);
+  G.day.c.setAttribute('aria-label',`Venta del día: ${pV}% de la meta`);
+  G.mtd.c.setAttribute('aria-label',`Cuota del mes: ${pm}%, ritmo esperado ${pace}%`);
+  setLeds(pV,lastPV!=null&&lastPV<100&&pV>=100&&!NOANIM);
+  if(lastPV!=null&&lastPV<100&&pV>=100) toast('Meta de venta del día cumplida');
+  lastPV=pV;
+  setN('lv-p',pV,fp); setN('ck-vp',pV,fp); setN('ck-mp',pm,fp); setN('sc-mtd-p',pm,fp);
+  setN('lv-m',pm,fp); setN('lv-b',bg,fp); setN('ck-b',bg,fp); setN('ck-pen',pen,fp);
+  setN('ck-vs',S.v.a,fc);
+  $('lv-u').textContent=`${S.u.a} / ${S.u.o}`; $('lv-l').textContent=`${tl} / 12`;
+  const gn=$('ck-u'); gn.textContent=fi(S.u.a); $('ck-uo').textContent=`de ${fi(S.u.o)}`;
+  if(lastU!=null&&lastU!==S.u.a&&!NOANIM){gn.classList.remove('pop');void gn.offsetWidth;gn.classList.add('pop');}
+  lastU=S.u.a;
+  $('ck-ms').textContent=`Ritmo ${pace}%`;
+
+  // MTD
+  setN('sc-mtd-v',S.mtd.va,fc); setN('sc-mtd-o',S.mtd.vo,fc);
+  $('sc-mtd-u').textContent=`${S.mtd.ua} / ${S.mtd.uo}`;
+  ride(pm);
+
+  // KPI Grid
+  const kpis=[
+    {label:'Ventas Totales',val:S.v.a,fmt:fc,target:fc(S.v.o),p:pV,diff:S.v.o<=0?'Sin meta capturada':S.v.a>=S.v.o?'✓ Cumplida':'Falta: '+fc(S.v.o-S.v.a),auto:false},
+    {label:'Unidades Vendidas',val:S.u.a,fmt:fr,target:fi(S.u.o)+' motos',p:pU,diff:S.u.o<=0?'Sin meta capturada':S.u.a>=S.u.o?'✓ Cumplida':'Faltan: '+(S.u.o-S.u.a),auto:false},
+    {label:'Ticket Promedio',val:tk,fmt:fc,target:'$28,000.00',p:pT,diff:'Ventas ÷ Unidades',auto:true},
+    {label:'Leads Calificados',val:tl,fmt:fr,target:'12 prospectos',p:pL,diff:tl>=12?'✓ Meta alcanzada':'Faltan: '+(12-tl),auto:false}
+  ];
+  kpis.forEach((k,i)=>{
+    const c=pcl(k.p);
+    $(`k${i}-l`).textContent=k.label;
+    const pl=$(`k${i}-p`); pl.textContent=k.auto?`AUTO · ${k.p}%`:k.p+'%'; pl.className=`pill pill-${k.auto?'auto':c}`;
+    setN(`k${i}-v`,k.val,k.fmt);
+    $(`k${i}-t`).textContent=k.target;
+    const b=$(`k${i}-b`); b.className=`prog-fill prog-${c}`; b.style.width=Math.min(k.p,100)+'%';
+    $(`k${i}-d`).textContent=k.diff;
+  });
+
+  // Financieras
+  S.fin.forEach(f=>{
+    const b=f.s>0?Math.round((f.c/f.s)*100):0, p=$(`fb-${f.id}`);
+    p.textContent=b+'% Bateo'; p.className=`pill pill-${pcl(b)}`;
+    $(`fs-${f.id}`).textContent=f.s; $(`fc-${f.id}`).textContent=f.c; $(`fr-${f.id}`).textContent=f.r;
+  });
+  $('fsum-ts').textContent=ts;
+  $('fsum-tc').textContent=tc; $('fsum-tc').style.color='var(--ok)';
+  $('fsum-tr').textContent=tr; $('fsum-tr').style.color='var(--bad)';
+  $('fsum-bg').textContent=bg+'%'; $('fsum-bg').style.color=`var(--${pcl(bg)})`;
+  $('fsum-pen').textContent=pen+'%';
+
+  // Traffic table
+  S.tr.forEach((t,i)=>{
+    const cv=t.vi>0?Math.round((t.le/t.vi)*100):0, c=pcl(cv);
+    $(`tv-${i}`).textContent=t.vi; $(`tl-${i}`).textContent=t.le;
+    const b=$(`tb-${i}`); b.style.width=Math.min(cv,100)+'%'; b.style.background=`var(--${c})`;
+    const p=$(`tp-${i}`); p.textContent=cv+'%'; p.className=`pill pill-${c}`;
+  });
+  $('sc-tv').textContent=tv;
+  $('sc-tl').textContent=tl;
+  const tconv=tv>0?Math.round((tl/tv)*100):0;
+  $('sc-tc').textContent=tconv+'%';
+
+  // Meta pills
+  $('sc-mi').textContent=`${tv} / 60`;
+  const vOk=tv>=60, pmi=$('pill-mi');
+  pmi.textContent=vOk?'✓ Cumplida':'Faltan '+(60-tv);
+  pmi.className=`pill pill-${vOk?'ok':'bad'}`;
+
+  $('sc-ml').textContent=`${tl} / 12`;
+  const lOk=tl>=12, pml=$('pill-ml');
+  pml.textContent=lOk?'✓ Cumplida':'Faltan '+(12-tl);
+  pml.className=`pill pill-${lOk?'ok':'bad'}`;
+
+  // Comments
+  $('sc-comm').textContent=S.comm&&S.comm.trim().length>0?S.comm:'Sin observaciones registradas.';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EXPORT
+   ═══════════════════════════════════════════════════════════════ */
+function waText(){
+  const tv=S.tr.reduce((s,r)=>s+r.vi,0), tl=S.tr.reduce((s,r)=>s+r.le,0);
+  const tk=S.u.a>0?(S.v.a/S.u.a):0;
+  const pV=pct(S.v.a,S.v.o), pU=pct(S.u.a,S.u.o);
+  let fs=0,fco=0,fr=0; S.fin.forEach(f=>{fs+=f.s;fco+=f.c;fr+=f.r;});
+  const bg=fs>0?Math.round((fco/fs)*100):0;
+  const pen=S.u.a>0?Math.round((fco/S.u.a)*100):0;
+  const d=new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const sem=p=>p>=80?'🟢':p>=50?'🟡':'🔴';
+  let m=`🏁 *VENTO · TABLERO DIARIO*\n📍 *${S.ag}*\n📅 ${d}\n\n`;
+  m+=`💰 *VENTAS (DÍA)*\n• Ventas: ${fc(S.v.a)} / ${fc(S.v.o)} (${pV}% ${sem(pV)})\n• Motos: ${S.u.a} / ${S.u.o} (${pU}% ${sem(pU)})\n• Ticket: ${fc(tk)}\n\n`;
+  if(S.mtd.vo>0){const pm=pct(S.mtd.va,S.mtd.vo); m+=`📈 *MTD*\n• Venta: ${fc(S.mtd.va)} / ${fc(S.mtd.vo)} (${pm}%)\n• Motos: ${S.mtd.ua} / ${S.mtd.uo}\n\n`;}
+  m+=`🏦 *FINANCIERAS*\n`;
+  S.fin.forEach(f=>{const b=f.s>0?Math.round((f.c/f.s)*100):0; m+=`• ${f.n}: ${f.c}/${f.s} (${b}%)\n`;});
+  m+=`👉 Bateo: ${bg}% · Penetración: ${pen}%\n\n`;
+  m+=`🚦 *TRÁFICO*\n`;
+  S.tr.forEach(t=>{const c=t.vi>0?Math.round((t.le/t.vi)*100):0; m+=`• ${t.f}: ${t.vi}→${t.le} (${c}%)\n`;});
+  m+=`👉 Total: ${tv}/60 ${tv>=60?'🟢':'🔴'} · Leads: ${tl}/12 ${tl>=12?'🟢':'🔴'}\n\n`;
+  if(S.comm&&S.comm.trim()) m+=`📝 *OBS:* ${S.comm.trim()}\n`;
+  return m;
+}
+function copyWA(){
+  const t=waText(), ok=()=>toast('Resumen copiado para WhatsApp');
+  const legacy=()=>{
+    const a=document.createElement('textarea'); a.value=t; a.style.cssText='position:fixed;opacity:0;';
+    document.body.append(a); a.select();
+    let r=false; try{r=document.execCommand('copy');}catch(e){}
+    a.remove();
+    if(r) ok(); else toast('No se pudo copiar. Usa Descargar PNG',true);
+  };
+  if(navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(t).then(ok).catch(legacy); else legacy();
+}
+function nativeShare(){if(navigator.share)navigator.share({title:'Scorecard Vento - '+S.ag,text:waText()}).catch(()=>{});else copyWA();}
+
+function dlPNG(){
+  if(typeof html2canvas!=='function'){toast('Sin conexión: recarga con internet para descargar el PNG',true);return;}
+  const btn=document.getElementById('btn-dl'), lbl=document.getElementById('btn-dl-l');
+  btn.disabled=true; lbl.textContent='Generando…';
+  const end=()=>{NOANIM=false;document.body.classList.remove('exporting');btn.disabled=false;lbl.textContent='Descargar PNG';};
+  NOANIM=true; document.body.classList.add('exporting');
+  go('scorecard');
+  Object.values(G).forEach(g=>g.snap());
+  setTimeout(()=>{
+    html2canvas(document.getElementById('exec-sc'),{scale:2,backgroundColor:COL.bg,useCORS:true,logging:false}).then(c=>{
+      const a=document.createElement('a');
+      const d=new Date(), ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      a.download=`Scorecard_Vento_${S.ag.replace(/[^a-zA-Z0-9]/g,'_')}_${ds}.png`;
+      a.href=c.toDataURL('image/png'); a.click();
+      end();
+      toast('Imagen PNG descargada en alta resolución');
+    }).catch(()=>{end();toast('No se pudo generar la imagen. Intenta de nuevo',true);});
+  },250);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STORAGE
+   ═══════════════════════════════════════════════════════════════ */
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function load(){try{const r=localStorage.getItem(KEY);if(r)Object.assign(S,JSON.parse(r));}catch(e){}}
+
+function resetDay(){
+  if(!confirm('¿Reiniciar los datos del día? Las metas mensuales se conservan.'))return;
+  S.v.a=0;S.u.a=0;S.fin.forEach(f=>{f.s=0;f.c=0;f.r=0;});S.tr.forEach(t=>{t.vi=0;t.le=0;});S.comm='';
+  save();syncUI();buildTrafficCapture();calc();toast('Datos diarios reiniciados');
+}
+
+function toast(m,err){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=m;t.classList.toggle('err',!!err);t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3200);}
 </script>
 </body>
 </html>
