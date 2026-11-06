@@ -2,140 +2,927 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>Vento · Tablero diario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Vento · Tablero de Control Diario</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0;}
-    :root{
-      --vred:#C8000F;--vred-dim:#a30410;--vred-light:#fde8ea;
-      --vbg:#f5f5f3;--vbg2:#ffffff;--vbg3:#f0f0ee;
-      --vborder:#ddddd8;--vborder2:#c8c8c2;
-      --vtext:#1a1a1a;--vmuted:#666;--vdim:#999;
-      --radius:4px;--radius-lg:8px;
-      --fs-xs:13px;--fs-sm:15px;--fs-base:17px;--fs-md:19px;--fs-xl:27px;--fs-2xl:32px;--fs-hero:58px;
+    :root {
+      --v-red: #E10600;
+      --v-red-dark: #B30000;
+      --v-red-subtle: rgba(225, 6, 0, 0.08);
+      --v-slate-900: #0F172A;
+      --v-slate-800: #1E293B;
+      --v-slate-700: #334155;
+      --v-slate-600: #475569;
+      --v-slate-500: #64748B;
+      --v-slate-400: #94A3B8;
+      --v-slate-200: #E2E8F0;
+      --v-slate-100: #F1F5F9;
+      --v-slate-50: #F8FAFC;
+      --v-white: #FFFFFF;
+
+      /* Semáforos independientes del Rojo Vento */
+      --ok-text: #15803D;
+      --ok-bg: #DCFCE7;
+      --ok-border: #86EFAC;
+      --warn-text: #B45309;
+      --warn-bg: #FEF3C7;
+      --warn-border: #FCD34D;
+      --bad-text: #B91C1C;
+      --bad-bg: #FEE2E2;
+      --bad-border: #FCA5A5;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+      --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.1);
     }
-    body{background:var(--vbg);color:var(--vtext);font-family:'Barlow',sans-serif;font-size:var(--fs-base);}
-    .dash{padding:1rem 0 2rem;max-width:1400px;margin:0 auto;padding-left:1rem;padding-right:1rem;}
-    .vheader{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--vborder);padding-bottom:1rem;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px;}
-    .vlogo{display:flex;align-items:center;gap:12px;}
-    .vlogo-mark{background:var(--vred);width:6px;height:40px;border-radius:2px;flex-shrink:0;}
-    .vlogo-text{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:var(--fs-xl);letter-spacing:0.04em;color:var(--vtext);line-height:1.1;}
-    .vlogo-sub{font-size:var(--fs-xs);font-weight:400;color:var(--vmuted);letter-spacing:0.06em;text-transform:uppercase;}
-    .header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-    .vdate{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);color:var(--vmuted);letter-spacing:0.05em;text-align:right;}
-    .agency-select-wrap{position:relative;}
-    .agency-select-wrap::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--vred);font-size:var(--fs-sm);pointer-events:none;}
-    select.agency-sel{appearance:none;-webkit-appearance:none;background:var(--vbg2);border:1px solid var(--vborder2);border-radius:var(--radius);color:var(--vtext);font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-md);font-weight:600;letter-spacing:0.04em;padding:7px 30px 7px 10px;cursor:pointer;min-width:220px;max-width:100%;}
-    select.agency-sel:focus{outline:none;border-color:var(--vred);}
-    .btn-action{display:flex;align-items:center;gap:7px;border:none;font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px 14px;border-radius:var(--radius);cursor:pointer;white-space:nowrap;}
-    .btn-action:active{transform:scale(0.97);}
-    .btn-screenshot{background:var(--vred);color:#fff;}
-    .btn-screenshot:hover{background:var(--vred-dim);}
-    .btn-screenshot.loading{opacity:0.7;pointer-events:none;}
-    .sec-label{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--vmuted);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-    .sec-label::after{content:'';flex:1;height:1px;background:var(--vborder);}
-    .mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem;}
-    @media(max-width:700px){.mgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-    @media(max-width:380px){.mgrid{grid-template-columns:1fr;}}
-    .mcard{background:var(--vbg2);border:1px solid var(--vborder);border-radius:var(--radius-lg);padding:14px 12px;transition:border-color 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
-    .mcard:hover{border-color:var(--vborder2);}
-    .mcard.editing{border-color:var(--vred);box-shadow:0 0 0 3px var(--vred-light);}
-    .mcard.readonly{border-style:dashed;}
-    .mcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
-    .mcard-label{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--vmuted);}
-    .edit-icon{font-size:var(--fs-sm);color:var(--vdim);cursor:pointer;background:none;border:none;padding:2px 4px;}
-    .edit-icon:hover{color:var(--vred);}
-    .auto-badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:var(--vbg3);border:1px solid var(--vborder);color:var(--vmuted);padding:2px 7px;border-radius:3px;}
-    .auto-leads-badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:#fde8ea;border:1px solid #f5b8be;color:var(--vred);padding:2px 7px;border-radius:3px;}
-    .mcard-actual{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-2xl);font-weight:700;color:var(--vtext);line-height:1;margin-bottom:4px;}
-    .mcard-obj{font-size:var(--fs-sm);color:var(--vdim);margin-bottom:10px;}
-    .mcard-obj span{color:var(--vmuted);font-weight:500;}
-    .vbar-bg{height:4px;background:var(--vbg3);border-radius:2px;overflow:hidden;margin-bottom:6px;border:1px solid var(--vborder);}
-    .vbar-fill{height:100%;border-radius:2px;transition:width 0.4s ease;}
-    .bg-red{background:var(--vred);}
-    .bg-amber{background:#d97706;}
-    .bg-green{background:#16a34a;}
-    .pct-row{display:flex;justify-content:space-between;align-items:center;}
-    .pct-num{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-md);font-weight:700;}
-    .pct-hint{font-size:var(--fs-xs);color:var(--vdim);}
-    .c-red{color:var(--vred);}
-    .c-amber{color:#b45309;}
-    .c-green{color:#15803d;}
-    .vinput{width:100%;background:var(--vbg3);border:1px solid var(--vborder2);border-radius:var(--radius);color:var(--vtext);font-family:'Barlow',sans-serif;font-size:var(--fs-base);padding:6px 9px;margin-top:4px;}
-    .vinput:focus{outline:none;border-color:var(--vred);}
-    .vinput-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
-    .vinput-label{font-size:var(--fs-xs);color:var(--vdim);letter-spacing:0.04em;margin-bottom:2px;text-transform:uppercase;font-weight:600;}
-    .fin-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;}
-    @media(max-width:650px){.fin-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-    @media(max-width:400px){.fin-grid{grid-template-columns:1fr;}}
-    .fin-item{background:var(--vbg3);border:1px solid var(--vborder);border-radius:var(--radius);padding:10px;}
-    .fin-name{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-md);font-weight:700;letter-spacing:0.1em;color:var(--vred);margin-bottom:8px;}
-    .fin-field{display:flex;flex-direction:column;margin-bottom:6px;}
-    .fin-field:last-child{margin-bottom:0;}
-    .fin-field-label{font-size:var(--fs-xs);color:var(--vdim);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px;font-weight:600;}
-    .fin-field input{width:100%;background:var(--vbg2);border:1px solid var(--vborder2);border-radius:var(--radius);color:var(--vtext);font-family:'Barlow',sans-serif;font-size:var(--fs-base);padding:5px 7px;text-align:center;}
-    .fin-field input:focus{outline:none;border-color:var(--vred);}
-    .fin-totals{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--vborder);flex-wrap:wrap;gap:6px;}
-    .fin-total-label{font-size:var(--fs-sm);color:var(--vmuted);}
-    .fin-total-val{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-xl);font-weight:700;}
-    .vcard{background:var(--vbg2);border:1px solid var(--vborder);border-radius:var(--radius-lg);padding:1rem 1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
-    .vtable-wrap{overflow-x:auto;margin-bottom:12px;}
-    .vtable{width:100%;border-collapse:collapse;min-width:400px;}
-    .vtable th{font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--vmuted);text-align:left;padding:7px 8px;border-bottom:2px solid var(--vborder);}
-    .vtable td{padding:9px 8px;color:var(--vtext);border-bottom:1px solid var(--vbg3);font-size:var(--fs-base);vertical-align:middle;}
-    .vtable tr:last-child td{border-bottom:none;}
-    .vtable td input{width:68px;background:var(--vbg3);border:1px solid var(--vborder);border-radius:var(--radius);color:var(--vtext);font-size:var(--fs-base);padding:5px 6px;text-align:center;font-family:'Barlow',sans-serif;}
-    .vtable td input:focus{outline:none;border-color:var(--vred);}
-    .vtable tfoot td{border-top:2px solid var(--vborder);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:var(--fs-md);padding-top:10px;}
-    .badge{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-sm);font-weight:700;padding:3px 9px;border-radius:3px;letter-spacing:0.04em;}
-    .b-green{background:#dcfce7;color:#15803d;}
-    .b-amber{background:#fef3c7;color:#b45309;}
-    .b-red{background:#fee2e2;color:#b91c1c;}
-    .comentarios-wrap{margin-top:12px;}
-    .comentarios-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-    textarea.comentarios{width:100%;background:var(--vbg3);border:1px solid var(--vborder2);border-radius:var(--radius);color:var(--vtext);font-family:'Barlow',sans-serif;font-size:var(--fs-sm);padding:8px 10px;resize:none;height:80px;line-height:1.5;}
-    textarea.comentarios:focus{outline:none;border-color:var(--vred);}
-    textarea.comentarios::placeholder{color:var(--vdim);}
-    .traffic-meta{display:flex;flex-wrap:wrap;gap:1.5rem;margin:0.75rem 0 0.25rem;padding:0.5rem 0;border-top:1px solid var(--vbg3);}
-    .traffic-meta-item{display:flex;align-items:baseline;gap:8px;font-size:var(--fs-base);}
-    .traffic-meta-item .label{font-weight:500;color:var(--vmuted);}
-    .traffic-meta-item .value{font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-md);}
-    .traffic-meta-item .meta{font-size:var(--fs-sm);color:var(--vdim);}
-    .traffic-meta-item .ok{color:#16a34a;}
-    .traffic-meta-item .fail{color:var(--vred);}
-    .toast{position:fixed;bottom:20px;right:20px;background:var(--vbg2);border:1px solid var(--vred);color:var(--vtext);font-family:'Barlow Condensed',sans-serif;font-size:var(--fs-base);font-weight:600;letter-spacing:0.05em;padding:10px 18px;border-radius:var(--radius);opacity:0;transform:translateY(10px);transition:all 0.25s;pointer-events:none;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
-    .toast.show{opacity:1;transform:translateY(0);}
-    @media(max-width:600px){
-      .dash{padding-left:0.5rem;padding-right:0.5rem;}
-      .vheader .vlogo-text{font-size:var(--fs-md);}
-      .vheader .vlogo-sub{font-size:11px;}
-      select.agency-sel{min-width:160px;font-size:var(--fs-sm);padding:5px 24px 5px 8px;}
-      .btn-action{font-size:var(--fs-xs);padding:6px 10px;}
-      .fin-grid{grid-template-columns:1fr 1fr;}
-      .vtable td input{width:56px;font-size:var(--fs-sm);}
-      .traffic-meta{gap:0.75rem;}
-      .traffic-meta-item{font-size:var(--fs-sm);}
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--v-slate-100);
+      color: var(--v-slate-900);
+      font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 15px;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 80px;
     }
-    @media(max-width:400px){
-      .fin-grid{grid-template-columns:1fr;}
-      .vtable{min-width:300px;}
+
+    /* Contenedor principal */
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Header de aplicación */
+    .app-header {
+      background: var(--v-white);
+      border: 1px solid var(--v-slate-200);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-pill {
+      background: var(--v-red);
+      width: 6px;
+      height: 44px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1;
+      color: var(--v-slate-900);
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .brand-title span {
+      color: var(--v-red);
+      font-weight: 700;
+    }
+    .brand-subtitle {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--v-slate-500);
+      margin-top: 4px;
+    }
+
+    /* Selector de Agencia & Fecha */
+    .header-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+    .select-wrapper {
+      position: relative;
+    }
+    .agency-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--v-slate-50);
+      border: 1.5px solid var(--v-slate-200);
+      border-radius: var(--radius-sm);
+      padding: 9px 36px 9px 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--v-slate-800);
+      cursor: pointer;
+      min-width: 240px;
+      transition: all 0.15s ease;
+    }
+    .agency-select:focus {
+      outline: none;
+      border-color: var(--v-red);
+      background: var(--v-white);
+      box-shadow: 0 0 0 3px var(--v-red-subtle);
+    }
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--v-slate-600);
+      border-bottom: 2px solid var(--v-slate-600);
+      transform: translateY(-70%) rotate(45deg);
+      pointer-events: none;
+    }
+
+    .date-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .date-badge .day-str {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--v-slate-800);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .date-badge .pacing-str {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--v-slate-500);
+    }
+
+    /* Navegación por Pestañas (Modo Captura vs Modo Scorecard) */
+    .tab-bar {
+      display: flex;
+      background: var(--v-slate-200);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      gap: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--v-slate-600);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tab-btn:hover {
+      color: var(--v-slate-900);
+    }
+    .tab-btn.active {
+      background: var(--v-white);
+      color: var(--v-red);
+      box-shadow: var(--shadow-sm);
+    }
+    .tab-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Barra de Acciones Globales (WhatsApp, Descarga, Compartir) */
+    .action-toolbar {
+      background: var(--v-white);
+      border: 1px solid var(--v-slate-200);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+    .btn-primary {
+      background: var(--v-red);
+      color: var(--v-white);
+    }
+    .btn-primary:hover {
+      background: var(--v-red-dark);
+    }
+    .btn-whatsapp {
+      background: #25D366;
+      color: var(--v-white);
+    }
+    .btn-whatsapp:hover {
+      background: #1EBE5D;
+    }
+    .btn-secondary {
+      background: var(--v-slate-100);
+      color: var(--v-slate-800);
+      border-color: var(--v-slate-300);
+    }
+    .btn-secondary:hover {
+      background: var(--v-slate-200);
+    }
+    .btn-outline-danger {
+      background: transparent;
+      color: var(--v-slate-500);
+      font-size: 13px;
+      padding: 6px 10px;
+    }
+    .btn-outline-danger:hover {
+      color: var(--bad-text);
+      background: var(--bad-bg);
+    }
+
+    /* Contenido de vistas */
+    .view-panel {
+      display: none;
+    }
+    .view-panel.active {
+      display: block;
+    }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       VISTA 1: MODO CAPTURA (Optimizado para móvil y rapidez)
+       ════════════════════════════════════════════════════════════════════════ */
+    .capture-card {
+      background: var(--v-white);
+      border: 1px solid var(--v-slate-200);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .capture-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--v-slate-200);
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+    .capture-card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--v-slate-800);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .capture-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--v-slate-100);
+      color: var(--v-slate-600);
+      text-transform: uppercase;
+    }
+
+    .form-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--v-slate-600);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .form-label .helper {
+      font-size: 11px;
+      color: var(--v-slate-400);
+      text-transform: none;
+    }
+    .input-box {
+      background: var(--v-slate-50);
+      border: 1.5px solid var(--v-slate-200);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--v-slate-900);
+      width: 100%;
+      transition: all 0.15s ease;
+    }
+    .input-box:focus {
+      outline: none;
+      border-color: var(--v-red);
+      background: var(--v-white);
+      box-shadow: 0 0 0 3px var(--v-red-subtle);
+    }
+
+    /* Stepper para números enteros en móvil */
+    .stepper-wrap {
+      display: flex;
+      align-items: stretch;
+      border: 1.5px solid var(--v-slate-200);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--v-slate-50);
+    }
+    .stepper-btn {
+      width: 44px;
+      background: var(--v-slate-100);
+      border: none;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--v-slate-700);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .stepper-btn:hover {
+      background: var(--v-slate-200);
+    }
+    .stepper-btn:active {
+      background: var(--v-slate-300);
+    }
+    .stepper-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--v-slate-900);
+      padding: 8px 4px;
+      min-width: 0;
+    }
+    .stepper-input:focus {
+      outline: none;
+      background: var(--v-white);
+    }
+
+    /* Tablas de captura rápida */
+    .quick-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .quick-table th {
+      text-align: left;
+      padding: 8px 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--v-slate-500);
+      border-bottom: 2px solid var(--v-slate-200);
+    }
+    .quick-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--v-slate-100);
+      vertical-align: middle;
+    }
+    .quick-table tr:hover td {
+      background: var(--v-slate-50);
+    }
+
+    .source-tag {
+      font-weight: 600;
+      color: var(--v-slate-800);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       VISTA 2: SCORECARD EJECUTIVO (Diseño limpio para presentación y PNG)
+       ════════════════════════════════════════════════════════════════════════ */
+    #executive-scorecard {
+      background: var(--v-white);
+      border: 1px solid var(--v-slate-200);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 20px;
+    }
+
+    .scorecard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 2px solid var(--v-slate-900);
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+    }
+    .scorecard-agency {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--v-slate-900);
+      line-height: 1;
+    }
+    .scorecard-meta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--v-slate-500);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 5px;
+    }
+    .scorecard-badge-right {
+      text-align: right;
+    }
+    .scorecard-date {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--v-slate-800);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .scorecard-pacing {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--v-slate-100);
+      color: var(--v-slate-700);
+      margin-top: 4px;
+    }
+
+    /* Grilla de KPIs principales */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+
+    .kpi-card {
+      background: var(--v-slate-50);
+      border: 1px solid var(--v-slate-200);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .kpi-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .kpi-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--v-slate-500);
+    }
+    .kpi-val-main {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--v-slate-900);
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 6px;
+    }
+    .kpi-target-row {
+      font-size: 13px;
+      color: var(--v-slate-500);
+      margin-bottom: 10px;
+    }
+    .kpi-target-row span {
+      font-weight: 600;
+      color: var(--v-slate-700);
+    }
+
+    /* Barra de progreso */
+    .bar-track {
+      height: 6px;
+      background: var(--v-slate-200);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+    .bar-ok { background: #16A34A; }
+    .bar-warn { background: #D97706; }
+    .bar-bad { background: var(--v-red); }
+
+    .kpi-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .kpi-pct {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .kpi-diff {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--v-slate-500);
+    }
+
+    /* Tarjetas de Financieras y Embudo */
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--v-slate-700);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--v-slate-200);
+    }
+
+    .fin-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 700px) {
+      .fin-cards-grid { grid-template-columns: 1fr; }
+    }
+    .fin-block {
+      background: var(--v-slate-50);
+      border: 1px solid var(--v-slate-200);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+    }
+    .fin-block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .fin-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--v-red);
+      letter-spacing: 0.05em;
+    }
+    .fin-bateo-badge {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .fin-stats-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--v-slate-600);
+      border-top: 1px solid var(--v-slate-200);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+    .fin-stat-item {
+      text-align: center;
+    }
+    .fin-stat-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--v-slate-900);
+    }
+    .fin-stat-label {
+      font-size: 11px;
+      color: var(--v-slate-400);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .fin-summary-bar {
+      background: var(--v-slate-100);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .fin-summary-item {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .fin-summary-item .label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--v-slate-600);
+    }
+    .fin-summary-item .val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--v-slate-900);
+    }
+
+    /* Tabla de Tráfico de Alta Precisión */
+    .exec-table-wrap {
+      overflow-x: auto;
+      margin-bottom: 16px;
+      border: 1px solid var(--v-slate-200);
+      border-radius: var(--radius-md);
+    }
+    .exec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .exec-table th {
+      background: var(--v-slate-50);
+      padding: 10px 14px;
+      text-align: left;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--v-slate-500);
+      border-bottom: 2px solid var(--v-slate-200);
+    }
+    .exec-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--v-slate-100);
+      color: var(--v-slate-800);
+    }
+    .exec-table tfoot td {
+      background: var(--v-slate-50);
+      border-top: 2px solid var(--v-slate-200);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    /* Semáforo Pill */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .pill-ok { background: var(--ok-bg); color: var(--ok-text); }
+    .pill-warn { background: var(--warn-bg); color: var(--warn-text); }
+    .pill-bad { background: var(--bad-bg); color: var(--bad-text); }
+
+    /* Metas de piso pills */
+    .meta-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .meta-pill {
+      background: var(--v-slate-50);
+      border: 1px solid var(--v-slate-200);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .meta-pill .label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--v-slate-600);
+      text-transform: uppercase;
+    }
+    .meta-pill .num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--v-slate-900);
+    }
+
+    /* Comentarios */
+    .exec-comments {
+      background: var(--v-slate-50);
+      border: 1px solid var(--v-slate-200);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      font-size: 14px;
+      color: var(--v-slate-700);
+      line-height: 1.5;
+    }
+    .exec-comments-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--v-slate-400);
+      margin-bottom: 4px;
+    }
+
+    /* Footer del Scorecard */
+    .scorecard-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px solid var(--v-slate-200);
+      font-size: 11px;
+      color: var(--v-slate-400);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--v-slate-900);
+      color: var(--v-white);
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Acumulado MTD Card especial */
+    .mtd-banner {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      border-radius: var(--radius-md);
+      color: var(--v-white);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .mtd-banner-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mtd-stats-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .mtd-stat {
+      display: flex;
+      flex-direction: column;
+    }
+    .mtd-stat-label {
+      font-size: 11px;
+      color: var(--v-slate-400);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .mtd-stat-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #38BDF8;
     }
   </style>
 </head>
 <body>
-<div class="dash" id="dashboard">
-  <div class="vheader">
-    <div class="vlogo">
-      <div class="vlogo-mark"></div>
+
+<div class="app-container">
+
+  <!-- Header Superior -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-pill"></div>
       <div>
-        <div class="vlogo-text">VENTO / <span id="agency-name-display" style="color:var(--vmuted);font-weight:400;">44 Jiutepec Morelos</span></div>
-        <div class="vlogo-sub">Tablero de control diario</div>
+        <div class="brand-title">VENTO <span>/</span> <span id="hdr-agency-name" style="color:var(--v-slate-700); font-weight:600;">44 Jiutepec Morelos</span></div>
+        <div class="brand-subtitle">Tablero de Control Diario y Desempeño Operativo</div>
       </div>
     </div>
-    <div class="header-right">
-      <div class="agency-select-wrap">
-        <select class="agency-sel" id="agency-sel" onchange="changeAgency(this.value)">
+    <div class="header-controls">
+      <div class="select-wrapper">
+        <select class="agency-select" id="agency-select" onchange="onAgencyChange(this.value)">
           <optgroup label="── MORELOS ──">
             <option value="103 Cuernavaca Sur">103 Cuernavaca Sur</option>
             <option value="106 Emiliano Zapata">106 Emiliano Zapata</option>
@@ -186,7 +973,7 @@
             <option value="67 Xochimilco">67 Xochimilco</option>
             <option value="75 Ermita Santa Cruz">75 Ermita Santa Cruz</option>
             <option value="83 Centenario">83 Centenario</option>
-            <option value="83 Centenario">230 Tlalpan-Ermita</option>
+            <option value="230 Tlalpan-Ermita">230 Tlalpan-Ermita</option>
           </optgroup>
           <optgroup label="── CDMX NORTE / CENTRO ──">
             <option value="02 Insurgentes">02 Insurgentes</option>
@@ -227,295 +1014,1071 @@
           </optgroup>
         </select>
       </div>
-      <button class="btn-action btn-screenshot" id="btn-cap" onclick="takeScreenshot()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        Capturar
-      </button>
-      <div class="vdate" id="vdate"></div>
-    </div>
-  </div>
-
-  <!-- Objetivos del día -->
-  <div class="sec-label">Objetivos del día</div>
-  <div class="mgrid" id="mgrid"></div>
-
-  <!-- Financieras colocadas -->
-  <div class="sec-label" style="margin-top:0.5rem;">Financieras colocadas</div>
-  <div style="background:var(--vbg2);border:1px solid var(--vborder);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <div class="fin-grid" id="fin-grid"></div>
-    <div class="fin-totals">
-      <div><div class="fin-total-label">Total colocado</div><div class="fin-total-val c-green" id="fin-actual-total">0</div></div>
-      <div style="text-align:center;"><div class="fin-total-label">Solicitudes totales</div><div class="fin-total-val" style="color:var(--vmuted);" id="fin-obj-total">0</div></div>
-      <div style="text-align:right;"><div class="fin-total-label">Alcance</div><div class="fin-total-val" id="fin-pct-total">—</div></div>
-    </div>
-    <div class="vbar-bg" style="margin-top:10px;height:5px;"><div class="vbar-fill bg-red" id="fin-bar" style="width:0%"></div></div>
-  </div>
-
-  <!-- Control de tráfico (protagonista) -->
-  <div class="vcard" style="margin-bottom:0.5rem;">
-    <div class="sec-label" style="margin-bottom:12px;">Control de tráfico</div>
-    <div class="vtable-wrap">
-      <table class="vtable">
-        <thead><tr><th>Fuente</th><th>Visitas</th><th>Leads</th><th>Conv.</th></tr></thead>
-        <tbody id="tbody"></tbody>
-        <tfoot><tr>
-          <td style="color:var(--vmuted);font-size:var(--fs-sm);font-weight:600;">Totales</td>
-          <td id="tfoot-visitas" style="font-weight:700;">0</td>
-          <td id="tfoot-leads" style="font-weight:700;color:var(--vred);">0</td>
-          <td id="tfoot-conv" style="font-weight:700;">0%</td>
-        </tr></tfoot>
-      </table>
-    </div>
-
-    <!-- Metas de tráfico -->
-    <div class="traffic-meta" id="traffic-meta">
-      <div class="traffic-meta-item"><span class="label">🎯 Interacciones (meta 60):</span><span class="value" id="meta-visitas">0</span><span class="meta" id="meta-visitas-status">❌</span></div>
-      <div class="traffic-meta-item"><span class="label">🎯 Leads (meta 12):</span><span class="value" id="meta-leads">0</span><span class="meta" id="meta-leads-status">❌</span></div>
-    </div>
-
-    <div class="comentarios-wrap">
-      <div class="sec-label" style="margin-top:14px;margin-bottom:6px;">Comentarios del día</div>
-      <div class="comentarios-header">
-        <span style="font-size:var(--fs-xs);color:var(--vmuted);">Información relevante</span>
-        <span style="font-size:var(--fs-xs);color:var(--vdim);" id="char-count">0 / 200</span>
+      <div class="date-badge">
+        <div class="day-str" id="date-display">Viernes, 6 de Noviembre</div>
+        <div class="pacing-str" id="month-pacing-str">Día 6 de 30 · 20% del mes</div>
       </div>
-      <textarea class="comentarios" id="comentarios-txt" maxlength="200" placeholder="Ej: Visita de promotor Vento Credit, evento en plaza, clima afectó tráfico..." oninput="updateCharCount()"></textarea>
+    </div>
+  </header>
+
+  <!-- Selector de Modo (Tabs) -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-btn-capture" onclick="switchView('capture')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Modo Captura de Datos
+    </button>
+    <button class="tab-btn" id="tab-btn-scorecard" onclick="switchView('scorecard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Scorecard Ejecutivo
+    </button>
+  </div>
+
+  <!-- Barra de Herramientas & Exportación Multi-Canal -->
+  <div class="action-toolbar">
+    <div class="toolbar-group">
+      <button class="btn btn-whatsapp" onclick="copyWhatsAppReport()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.173.231-.144.39-.086s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824z"/></svg>
+        Copiar para WhatsApp
+      </button>
+      <button class="btn btn-primary" id="btn-download-img" onclick="downloadScorecardPNG()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Descargar Imagen PNG
+      </button>
+      <button class="btn btn-secondary" id="btn-native-share" onclick="nativeShareScorecard()" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Compartir en Móvil
+      </button>
+    </div>
+    <div class="toolbar-group">
+      <button class="btn btn-outline-danger" onclick="resetDailyData()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Reiniciar Día
+      </button>
     </div>
   </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       PANEL 1: FORMULARIO DE CAPTURA RÁPIDA (Optimizada para móviles)
+       ════════════════════════════════════════════════════════════════════════ -->
+  <div class="view-panel active" id="view-capture">
+    
+    <!-- 1. Ventas & Metas (Diario y MTD) -->
+    <div class="capture-card">
+      <div class="capture-card-header">
+        <div class="capture-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--v-red)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          1. Metas y Avance de Ventas
+        </div>
+        <span class="capture-badge">Diario & Acumulado</span>
+      </div>
+
+      <div class="form-grid-4">
+        <!-- Venta Diaria -->
+        <div class="form-group">
+          <label class="form-label">
+            Ventas Diarias ($)
+            <span class="helper">Facturado hoy</span>
+          </label>
+          <input type="number" class="input-box" id="inp-ventas-act" step="100" min="0" oninput="onDataChange()" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            Meta Venta Día ($)
+            <span class="helper">Cuota diaria</span>
+          </label>
+          <input type="number" class="input-box" id="inp-ventas-obj" step="500" min="0" oninput="onDataChange()" placeholder="52225.80">
+        </div>
+
+        <!-- Unidades Diarias -->
+        <div class="form-group">
+          <label class="form-label">
+            Motos Vendidas Hoy
+            <span class="helper">Unidades entregadas</span>
+          </label>
+          <div class="stepper-wrap">
+            <button class="stepper-btn" onclick="stepVal('inp-unidades-act', -1)">−</button>
+            <input type="number" class="stepper-input" id="inp-unidades-act" min="0" step="1" oninput="onDataChange()" value="0">
+            <button class="stepper-btn" onclick="stepVal('inp-unidades-act', 1)">+</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            Meta Unidades Día
+            <span class="helper">Objetivo</span>
+          </label>
+          <div class="stepper-wrap">
+            <button class="stepper-btn" onclick="stepVal('inp-unidades-obj', -1)">−</button>
+            <input type="number" class="stepper-input" id="inp-unidades-obj" min="0" step="1" oninput="onDataChange()" value="3">
+            <button class="stepper-btn" onclick="stepVal('inp-unidades-obj', 1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección MTD (Acumulado de Mes) -->
+      <div style="border-top:1px dashed var(--v-slate-200); margin-top:16px; padding-top:14px;">
+        <div style="font-family:'Barlow Condensed'; font-size:14px; font-weight:700; color:var(--v-slate-600); margin-bottom:10px; text-transform:uppercase;">
+          Acumulado del Mes en Curso (MTD)
+        </div>
+        <div class="form-grid-4">
+          <div class="form-group">
+            <label class="form-label">Venta Acumulada Mes ($)<span class="helper">Venta del 1 al día de hoy</span></label>
+            <input type="number" class="input-box" id="inp-mtd-ventas-act" step="1000" min="0" oninput="onDataChange()" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cuota Mensual Total ($)<span class="helper">Meta de la agencia</span></label>
+            <input type="number" class="input-box" id="inp-mtd-ventas-obj" step="5000" min="0" oninput="onDataChange()" placeholder="1200000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Motos Acumuladas Mes<span class="helper">Unidades totales mes</span></label>
+            <input type="number" class="input-box" id="inp-mtd-unidades-act" min="0" step="1" oninput="onDataChange()" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Meta Motos Mes<span class="helper">Cuota unidades</span></label>
+            <input type="number" class="input-box" id="inp-mtd-unidades-obj" min="0" step="1" oninput="onDataChange()" placeholder="60">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Financieras (VC, MK, FG) -->
+    <div class="capture-card">
+      <div class="capture-card-header">
+        <div class="capture-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--v-red)" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          2. Financieras de Crédito
+        </div>
+        <span class="capture-badge">Vento Credit & Aliados</span>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="quick-table">
+          <thead>
+            <tr>
+              <th style="width:25%;">Financiera</th>
+              <th style="width:25%;">Solicitudes</th>
+              <th style="width:25%;">Colocadas (Aprobadas)</th>
+              <th style="width:25%;">Rechazos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="source-tag" style="color:var(--v-red); font-size:16px;">VC (Vento Credit)</span></td>
+              <td>
+                <div class="stepper-wrap">
+                  <button class="stepper-btn" onclick="stepVal('fin-vc-sol', -1)">−</button>
+                  <input type="number" class="stepper-input" id="fin-vc-sol" min="0" value="2" oninput="onDataChange()">
+                  <button class="stepper-btn" onclick="stepVal('fin-vc-sol', 1)">+</button>
+                </div>
+              </td>
+              <td>
+                <div class="stepper-wrap">
+                  <button class="stepper-btn" onclick="stepVal('fin-vc-act', -1)">−</button>
+                  <input type="number" class="stepper-input" id="fin-vc-act" min="0" value="1" oninput="onDataChange()">
+                  <button class="stepper-btn" onclick="stepVal('fin-vc-act', 1)">+</button>
+                </div>
+              </td>
+              <td>
+                <div class="stepper-wrap">
+                  <button class="stepper-btn" onclick="stepVal('fin-vc-rec', -1)">−</button>
+                  <input type="number" class="stepper-input" id="fin-vc-rec" min="0" value="0" oninput="onDataChange()">
+                  <button class="stepper-btn" onclick="stepVal('fin-vc-rec', 1)">+</button>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><span class="source-tag" style="font-size:16px;">MK (Mercado Crédito)</span></td>
+              <td>
+                <div class="stepper-wrap">
+                  <button class="stepper-btn" onclick="stepVal('fin-mk-sol', -1)">−</button>
+                  <input type="number" class="stepper-input" id="fin-mk-sol" min="0" value="1" oninput="onDataChange()">
+                  <button class="stepper-btn" onclick="stepVal('fin-mk-sol', 1)">+</button>
+                </div>
+              </td>
+              <td>
+                <div class="stepper-wrap">
+                  <button class="stepper-btn" onclick="stepVal('fin-mk-act', -1)">−</button>
+                  <input type="number" class="stepper-input" id="fin-mk-act" min="0" value="0" oninput="onDataChange()">
+                  <button class="stepper-btn" onclick="stepVal('fin-mk-act', 1)">+</button>
+                </div>
+              </td>
+              <td>
+                <div class="stepper-wrap">
+                  <button class="stepper-btn" onclick="stepVal('fin-mk-rec', -1)">−</button>
+                  <input type="number" class="stepper-input" id="fin-mk-rec" min="0" value="0" oninput="onDataChange()">
+                  <button class="stepper-btn" onclick="stepVal('fin-mk-rec', 1)">+</button>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><span class="source-tag" style="font-size:16px;">FG (Finagil / Galaxia)</span></td>
+              <td>
+                <div class="stepper-wrap">
+                  <button class="stepper-btn" onclick="stepVal('fin-fg-sol', -1)">−</button>
+                  <input type="number" class="stepper-input" id="fin-fg-sol" min="0" value="1" oninput="onDataChange()">
+                  <button class="stepper-btn" onclick="stepVal('fin-fg-sol', 1)">+</button>
+                </div>
+              </td>
+              <td>
+                <div class="stepper-wrap">
+                  <button class="stepper-btn" onclick="stepVal('fin-fg-act', -1)">−</button>
+                  <input type="number" class="stepper-input" id="fin-fg-act" min="0" value="0" oninput="onDataChange()">
+                  <button class="stepper-btn" onclick="stepVal('fin-fg-act', 1)">+</button>
+                </div>
+              </td>
+              <td>
+                <div class="stepper-wrap">
+                  <button class="stepper-btn" onclick="stepVal('fin-fg-rec', -1)">−</button>
+                  <input type="number" class="stepper-input" id="fin-fg-rec" min="0" value="0" oninput="onDataChange()">
+                  <button class="stepper-btn" onclick="stepVal('fin-fg-rec', 1)">+</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. Control de Tráfico y Fuentes -->
+    <div class="capture-card">
+      <div class="capture-card-header">
+        <div class="capture-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--v-red)" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          3. Control de Tráfico & Prospección
+        </div>
+        <span class="capture-badge">Meta: 60 Visitas / 12 Leads</span>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="quick-table">
+          <thead>
+            <tr>
+              <th style="width:40%;">Canal de Prospección</th>
+              <th style="width:30%;">Visitas / Contactos</th>
+              <th style="width:30%;">Leads Calificados</th>
+            </tr>
+          </thead>
+          <tbody id="capture-traffic-rows">
+            <!-- Se genera dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. Comentarios Operativos -->
+    <div class="capture-card">
+      <div class="capture-card-header">
+        <div class="capture-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--v-red)" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          4. Comentarios del Cierre
+        </div>
+        <span class="capture-badge" id="capture-char-count">0 / 250</span>
+      </div>
+      <textarea id="inp-comentarios" maxlength="250" style="width:100%; min-height:85px; padding:12px; border:1.5px solid var(--v-slate-200); border-radius:var(--radius-sm); font-family:'Barlow'; font-size:14px; color:var(--v-slate-800); background:var(--v-slate-50); resize:none;" placeholder="Anota eventos relevantes: afluencia por quincena, visita de promotores de crédito, lluvia o afectación vial, modelos con más cotizaciones..." oninput="onCommentChange(this.value)"></textarea>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       PANEL 2: SCORECARD EJECUTIVO (Vista final lista para captura/PNG)
+       ════════════════════════════════════════════════════════════════════════ -->
+  <div class="view-panel" id="view-scorecard">
+    
+    <div id="executive-scorecard">
+      <!-- Encabezado del Scorecard -->
+      <div class="scorecard-header">
+        <div>
+          <div class="scorecard-agency" id="sc-agency-title">44 Jiutepec Morelos</div>
+          <div class="scorecard-meta">VENTO MOTORCYCLES · REPORTE OPERATIVO DIARIO</div>
+        </div>
+        <div class="scorecard-badge-right">
+          <div class="scorecard-date" id="sc-date-title">VIERNES, 6 DE NOVIEMBRE 2026</div>
+          <div class="scorecard-pacing" id="sc-pacing-badge">Día 6 de 30 · 20.0% del mes</div>
+        </div>
+      </div>
+
+      <!-- Banner Acumulado MTD (Month to Date) -->
+      <div class="mtd-banner">
+        <div class="mtd-banner-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Ritmo de Mes (MTD)
+        </div>
+        <div class="mtd-stats-group">
+          <div class="mtd-stat">
+            <span class="mtd-stat-label">Venta Acumulada</span>
+            <span class="mtd-stat-val" id="sc-mtd-ventas">$0</span>
+          </div>
+          <div class="mtd-stat">
+            <span class="mtd-stat-label">Cuota Mensual</span>
+            <span class="mtd-stat-val" id="sc-mtd-obj" style="color:var(--v-slate-300);">$1,200,000</span>
+          </div>
+          <div class="mtd-stat">
+            <span class="mtd-stat-label">Avance Cuota</span>
+            <span class="mtd-stat-val" id="sc-mtd-pct" style="color:#4ADE80;">0%</span>
+          </div>
+          <div class="mtd-stat">
+            <span class="mtd-stat-label">Unidades Mes</span>
+            <span class="mtd-stat-val" id="sc-mtd-unidades" style="color:#FBBF24;">0 / 60</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 1: Objetivos del Día (4 KPIs) -->
+      <div class="section-title">Objetivos y Resultados del Día</div>
+      <div class="kpi-grid">
+        <!-- Venta Total -->
+        <div class="kpi-card">
+          <div>
+            <div class="kpi-card-top">
+              <span class="kpi-title">Ventas Totales</span>
+              <span class="pill" id="pill-ventas">0%</span>
+            </div>
+            <div class="kpi-val-main" id="sc-ventas-act">$0.00</div>
+            <div class="kpi-target-row">Meta: <span id="sc-ventas-obj">$0.00</span></div>
+          </div>
+          <div>
+            <div class="bar-track">
+              <div class="bar-fill" id="bar-ventas" style="width:0%;"></div>
+            </div>
+            <div class="kpi-footer-row">
+              <span class="kpi-pct" id="pct-ventas">0%</span>
+              <span class="kpi-diff" id="diff-ventas">Falta: $0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unidades Vendidas -->
+        <div class="kpi-card">
+          <div>
+            <div class="kpi-card-top">
+              <span class="kpi-title">Unidades Vendidas</span>
+              <span class="pill" id="pill-unidades">0%</span>
+            </div>
+            <div class="kpi-val-main" id="sc-unidades-act">0</div>
+            <div class="kpi-target-row">Meta: <span id="sc-unidades-obj">3</span> motos</div>
+          </div>
+          <div>
+            <div class="bar-track">
+              <div class="bar-fill" id="bar-unidades" style="width:0%;"></div>
+            </div>
+            <div class="kpi-footer-row">
+              <span class="kpi-pct" id="pct-unidades">0%</span>
+              <span class="kpi-diff" id="diff-unidades">Falta: 0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ticket Promedio -->
+        <div class="kpi-card">
+          <div>
+            <div class="kpi-card-top">
+              <span class="kpi-title">Ticket Promedio</span>
+              <span class="pill pill-ok" id="pill-ticket">AUTO</span>
+            </div>
+            <div class="kpi-val-main" id="sc-ticket-act">$0.00</div>
+            <div class="kpi-target-row">Referencia: <span>$28,000.00</span></div>
+          </div>
+          <div>
+            <div class="bar-track">
+              <div class="bar-fill" id="bar-ticket" style="width:0%;"></div>
+            </div>
+            <div class="kpi-footer-row">
+              <span class="kpi-pct" id="pct-ticket">0%</span>
+              <span class="kpi-diff" id="diff-ticket">Ventas ÷ Unidades</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leads Generados -->
+        <div class="kpi-card">
+          <div>
+            <div class="kpi-card-top">
+              <span class="kpi-title">Leads Calificados</span>
+              <span class="pill" id="pill-leads">0%</span>
+            </div>
+            <div class="kpi-val-main" id="sc-leads-act">0</div>
+            <div class="kpi-target-row">Meta: <span id="sc-leads-obj">12</span> prospectos</div>
+          </div>
+          <div>
+            <div class="bar-track">
+              <div class="bar-fill" id="bar-leads" style="width:0%;"></div>
+            </div>
+            <div class="kpi-footer-row">
+              <span class="kpi-pct" id="pct-leads">0%</span>
+              <span class="kpi-diff" id="diff-leads">∑ Fuentes Tráfico</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 2: Financieras Colocadas -->
+      <div class="section-title">Financieras Colocadas y Bateo</div>
+      <div class="fin-cards-grid" id="sc-fin-grid">
+        <!-- Generado en JS -->
+      </div>
+      <div class="fin-summary-bar">
+        <div class="fin-summary-item">
+          <span class="label">Total Solicitudes:</span>
+          <span class="val" id="sc-fin-tot-sol">0</span>
+        </div>
+        <div class="fin-summary-item">
+          <span class="label">Total Colocadas:</span>
+          <span class="val" id="sc-fin-tot-col" style="color:var(--ok-text);">0</span>
+        </div>
+        <div class="fin-summary-item">
+          <span class="label">Total Rechazos:</span>
+          <span class="val" id="sc-fin-tot-rec" style="color:var(--bad-text);">0</span>
+        </div>
+        <div class="fin-summary-item">
+          <span class="label">Bateo / Aprobación:</span>
+          <span class="val" id="sc-fin-tot-bateo">0%</span>
+        </div>
+        <div class="fin-summary-item" style="border-left:2px solid var(--v-slate-300); padding-left:12px;">
+          <span class="label">Penetración de Crédito:</span>
+          <span class="val" id="sc-fin-penetracion" style="color:var(--v-red);">0%</span>
+        </div>
+      </div>
+
+      <!-- Sección 3: Control de Tráfico & Prospección -->
+      <div class="section-title">Control de Tráfico y Embudo de Prospección</div>
+      <div class="exec-table-wrap">
+        <table class="exec-table">
+          <thead>
+            <tr>
+              <th>Canal de Prospección</th>
+              <th style="text-align:center;">Visitas / Contactos</th>
+              <th style="text-align:center;">Leads Calificados</th>
+              <th style="text-align:right;">Tasa de Conversión</th>
+            </tr>
+          </thead>
+          <tbody id="sc-traffic-tbody">
+            <!-- JS -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Totales del Día</td>
+              <td style="text-align:center;" id="sc-tot-visitas">0</td>
+              <td style="text-align:center; color:var(--v-red);" id="sc-tot-leads">0</td>
+              <td style="text-align:right;" id="sc-tot-conv">0%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Cumplimiento de Metas de Piso -->
+      <div class="meta-pills-row">
+        <div class="meta-pill">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="label">Interacciones de Piso (Meta 60):</span>
+          <span class="num" id="sc-meta-interac">0</span>
+          <span class="pill" id="pill-meta-interac">Pendiente</span>
+        </div>
+        <div class="meta-pill">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          <span class="label">Leads de Piso (Meta 12):</span>
+          <span class="num" id="sc-meta-leads-num">0</span>
+          <span class="pill" id="pill-meta-leads">Pendiente</span>
+        </div>
+      </div>
+
+      <!-- Comentarios -->
+      <div class="exec-comments">
+        <div class="exec-comments-title">Comentarios Relevantes de Operación</div>
+        <div id="sc-comments-text">Sin observaciones registradas para este turno.</div>
+      </div>
+
+      <!-- Footer Scorecard -->
+      <div class="scorecard-footer">
+        <div>Generado por Sistema de Agencias Vento · Validación de Cierre Oficial</div>
+        <div>Tablero Diario v2.0</div>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Toast flotante -->
+<div class="toast" id="app-toast">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">Mensaje copiado con éxito</span>
+</div>
+
+<!-- Biblioteca html2canvas para la descarga de PNG nítido en alta resolución -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <script>
-const TP_OBJ_FIJO = 28000;
-const d = new Date();
-document.getElementById('vdate').innerHTML = d.toLocaleDateString('es-MX', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
+// ═════════════════════════════════════════════════════════════════════════════
+// CONSTANTES & ESTADO
+// ═════════════════════════════════════════════════════════════════════════════
+const TP_REF = 28000;
+const TRAFFIC_CHANNELS = ['Tráfico de Piso', 'Llamada', 'Redes Sociales', 'Cambaceo', 'Estrategias Adicionales'];
+const STORAGE_KEY = 'vento_scorecard_v2_data';
 
-// Métricas principales
-let metrics = [
-  {id:'ventas',   label:'Ventas totales',    obj:52225.80, actual:48371.93, type:'currency', editable:true},
-  {id:'unidades', label:'Unidades vendidas', obj:3,        actual:2,        type:'int',      editable:true},
-  {id:'leads',    label:'Leads generados',   obj:12,       actual:0,        type:'int',      editable:'obj-only'},
-  {id:'ticket',   label:'Ticket promedio',   obj:TP_OBJ_FIJO, actual:0,    type:'currency', editable:false},
-];
-let editingObj = null;
+let state = {
+  agency: '44 Jiutepec Morelos',
+  ventas: { act: 48371.93, obj: 52225.80 },
+  unidades: { act: 2, obj: 3 },
+  mtd: {
+    ventasAct: 245800,
+    ventasObj: 1200000,
+    unidadesAct: 11,
+    unidadesObj: 60
+  },
+  financieras: [
+    { id: 'vc', nombre: 'VC (Vento Credit)', sol: 2, col: 1, rec: 0 },
+    { id: 'mk', nombre: 'MK (Mercado Crédito)', sol: 1, col: 0, rec: 0 },
+    { id: 'fg', nombre: 'FG (Finagil / Galaxia)', sol: 1, col: 0, rec: 0 }
+  ],
+  traffic: [
+    { fuente: 'Tráfico de Piso', visitas: 6, leads: 2 },
+    { fuente: 'Llamada', visitas: 0, leads: 0 },
+    { fuente: 'Redes Sociales', visitas: 0, leads: 0 },
+    { fuente: 'Cambaceo', visitas: 0, leads: 0 },
+    { fuente: 'Estrategias Adicionales', visitas: 0, leads: 0 }
+  ],
+  comentarios: 'Visita de promotor Vento Credit, activación en plaza.'
+};
 
-// Financieras: solo VC, MK, FG (Otras → FG)
-let financieras = [
-  {nombre:'VC', obj:2, actual:1, rechazo:0},
-  {nombre:'MK', obj:1, actual:0, rechazo:0},
-  {nombre:'FG', obj:1, actual:0, rechazo:0},
-];
+// ═════════════════════════════════════════════════════════════════════════════
+// INICIALIZACIÓN
+// ═════════════════════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  loadFromStorage();
+  initDates();
+  renderCaptureTrafficTable();
+  syncInputsWithState();
+  updateCalculations();
 
-// Fuentes de tráfico fijas
-const TRAFFIC_SOURCES = ['Tráfico','Llamada','Redes Sociales','Cambaceo','Estrategias adicionales'];
-let traffic = TRAFFIC_SOURCES.map(f => ({fuente:f, visitas:0, leads:0}));
-traffic[0].visitas = 6; traffic[0].leads = 2;
+  // Detectar soporte para Web Share API
+  if (navigator.share) {
+    document.getElementById('btn-native-share').style.display = 'inline-flex';
+  }
+});
 
-// ─── utilidades ──────────────────────────────────────────────────────────────
-function fmtCur(v){ return '$'+Number(v).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fmt(v,t){ return t==='currency' ? fmtCur(v) : Number(v).toLocaleString('es-MX'); }
-function pct(a,o){ if(!o || o==0) return 0; return Math.min(Math.round((a/o)*100),100); }
-function barCls(p){ return p>=80 ? 'bg-green' : p>=50 ? 'bg-amber' : 'bg-red'; }
-function cCls(p){ return p>=80 ? 'c-green' : p>=50 ? 'c-amber' : 'c-red'; }
-function bCls(p){ return p>=80 ? 'b-green' : p>=50 ? 'b-amber' : 'b-red'; }
+function initDates() {
+  const d = new Date();
+  const dayName = d.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const dayCap = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+  
+  document.getElementById('date-display').textContent = dayCap;
+  document.getElementById('sc-date-title').textContent = dayCap.toUpperCase();
 
-function changeAgency(val){ document.getElementById('agency-name-display').textContent = val; }
+  // Pacing del mes
+  const currentDay = d.getDate();
+  const totalDaysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  const pctMonth = Math.round((currentDay / totalDaysInMonth) * 100);
 
-// ─── cálculos internos ──────────────────────────────────────────────────────
-function calcTP(){
-  const ventas = metrics.find(m=>m.id==='ventas').actual;
-  const unidades = metrics.find(m=>m.id==='unidades').actual;
-  const tp = metrics.find(m=>m.id==='ticket');
-  tp.actual = (unidades > 0) ? ventas / unidades : 0;
-  tp.obj = TP_OBJ_FIJO;
+  const pacingText = `Día ${currentDay} de ${totalDaysInMonth} · ${pctMonth}% del mes`;
+  document.getElementById('month-pacing-str').textContent = pacingText;
+  document.getElementById('sc-pacing-badge').textContent = pacingText;
 }
 
-function calcTrafficTotals(){
-  const totalVisitas = traffic.reduce((s,r) => s + r.visitas, 0);
-  const totalLeads = traffic.reduce((s,r) => s + r.leads, 0);
-  return { totalVisitas, totalLeads };
+// ═════════════════════════════════════════════════════════════════════════════
+// MANEJO DE VISTAS (MODO CAPTURA vs SCORECARD)
+// ═════════════════════════════════════════════════════════════════════════════
+function switchView(viewName) {
+  const tabCapture = document.getElementById('tab-btn-capture');
+  const tabScorecard = document.getElementById('tab-btn-scorecard');
+  const viewCapture = document.getElementById('view-capture');
+  const viewScorecard = document.getElementById('view-scorecard');
+
+  if (viewName === 'capture') {
+    tabCapture.classList.add('active');
+    tabScorecard.classList.remove('active');
+    viewCapture.classList.add('active');
+    viewScorecard.classList.remove('active');
+  } else {
+    tabScorecard.classList.add('active');
+    tabCapture.classList.remove('active');
+    viewScorecard.classList.add('active');
+    viewCapture.classList.remove('active');
+    updateCalculations(); // Actualiza antes de mostrar
+  }
 }
 
-function calcLeads(){
-  const { totalLeads } = calcTrafficTotals();
-  metrics.find(m=>m.id==='leads').actual = totalLeads;
-  document.getElementById('tfoot-leads').textContent = totalLeads;
-}
+// ═════════════════════════════════════════════════════════════════════════════
+// RENDER & SINCRONIZACIÓN DE INPUTS
+// ═════════════════════════════════════════════════════════════════════════════
+function renderCaptureTrafficTable() {
+  const tbody = document.getElementById('capture-traffic-rows');
+  tbody.innerHTML = '';
 
-function updateTrafficMeta(){
-  const { totalVisitas, totalLeads } = calcTrafficTotals();
-  document.getElementById('meta-visitas').textContent = totalVisitas;
-  document.getElementById('meta-leads').textContent = totalLeads;
-  const vOk = totalVisitas >= 60;
-  const lOk = totalLeads >= 12;
-  document.getElementById('meta-visitas-status').textContent = vOk ? '✅' : '❌';
-  document.getElementById('meta-visitas-status').className = 'meta ' + (vOk ? 'ok' : 'fail');
-  document.getElementById('meta-leads-status').textContent = lOk ? '✅' : '❌';
-  document.getElementById('meta-leads-status').className = 'meta ' + (lOk ? 'ok' : 'fail');
-}
-
-// ─── render métricas ──────────────────────────────────────────────────────
-function renderMetrics(){
-  calcTP(); calcLeads();
-  const g = document.getElementById('mgrid'); g.innerHTML = '';
-  metrics.forEach((m,i)=>{
-    const p = pct(m.actual, m.obj);
-    const isEd = (editingObj === i && m.editable === true);
-    const isTP = (m.id === 'ticket');
-    const isLeads = (m.id === 'leads');
-    const div = document.createElement('div');
-    div.className = 'mcard' + (isEd ? ' editing' : '') + (isTP || isLeads ? ' readonly' : '');
-    let topRight = isTP ? `<span class="auto-badge">AUTO</span>` :
-                   isLeads ? `<span class="auto-leads-badge">∑ FUENTES</span>` :
-                   `<button class="edit-icon" onclick="toggleEdit(${i})">${isEd ? '✕' : '✎'}</button>`;
-    let inputArea = '';
-    if(isTP){
-      inputArea = `<div class="vinput-label" style="margin-bottom:4px;margin-top:4px;">Ventas ÷ Unidades</div><div style="font-size:var(--fs-xs);color:var(--vdim);padding:5px 0 6px;">Se calcula automáticamente</div>`;
-    } else if(isLeads){
-      inputArea = `<div class="vinput-label" style="margin-bottom:4px;margin-top:4px;">Objetivo diario</div><input class="vinput" type="number" value="${m.obj}" step="1" min="0" oninput="updateLeadsObj(this.value)" />`;
-    } else if(isEd){
-      inputArea = `<div class="vinput-row"><div><div class="vinput-label">Objetivo</div><input class="vinput" type="number" value="${m.obj}" step="${m.type==='currency'?'500':'1'}" min="0" oninput="updateObj(${i},this.value)" /></div><div><div class="vinput-label">Real</div><input class="vinput" type="number" value="${m.actual}" step="${m.type==='currency'?'100':'1'}" min="0" oninput="updateAct(${i},this.value)" /></div></div>`;
-    } else {
-      inputArea = `<div class="vinput-label" style="margin-bottom:4px;">Avance actual</div><input class="vinput" type="number" value="${m.actual}" step="${m.type==='currency'?'100':'1'}" min="0" oninput="updateAct(${i},this.value)" />`;
-    }
-    div.innerHTML = `<div class="mcard-top"><div class="mcard-label">${m.label}</div>${topRight}</div>
-      <div class="mcard-actual" id="actual-disp-${i}">${fmt(m.actual,m.type)}</div>
-      <div class="mcard-obj">Obj: <span id="obj-disp-${i}">${fmt(m.obj,m.type)}</span></div>
-      ${inputArea}
-      <div style="margin-top:10px;"><div class="vbar-bg"><div class="vbar-fill ${barCls(p)}" id="bar-${i}" style="width:${p}%"></div></div>
-      <div class="pct-row"><span class="pct-num ${cCls(p)}" id="pct-${i}">${p}%</span><span class="pct-hint">${m.actual>=m.obj ? '✓ Meta' : 'Falta: '+fmt(m.obj-m.actual,m.type)}</span></div></div>`;
-    g.appendChild(div);
-  });
-}
-
-function toggleEdit(i){ if(!metrics[i].editable || metrics[i].editable==='obj-only') return; editingObj = (editingObj===i) ? null : i; renderMetrics(); }
-function updateObj(i,v){ metrics[i].obj = parseFloat(v) || 0; updateGaugeFinancieras(); refreshCard(i); }
-function updateAct(i,v){ metrics[i].actual = parseFloat(v) || 0; calcTP(); refreshTPCard(); updateGaugeFinancieras(); refreshCard(i); }
-function updateLeadsObj(v){ metrics.find(m=>m.id==='leads').obj = parseInt(v) || 0; refreshLeadsCard(); updateGaugeFinancieras(); }
-
-function refreshCard(i){
-  const m = metrics[i]; const p = pct(m.actual, m.obj);
-  const bar = document.getElementById('bar-'+i); const pnum = document.getElementById('pct-'+i);
-  const act = document.getElementById('actual-disp-'+i); const obj = document.getElementById('obj-disp-'+i);
-  if(act) act.textContent = fmt(m.actual, m.type);
-  if(obj) obj.textContent = fmt(m.obj, m.type);
-  if(bar){ bar.style.width = p+'%'; bar.className = 'vbar-fill '+barCls(p); }
-  if(pnum){ pnum.textContent = p+'%'; pnum.className = 'pct-num '+cCls(p); }
-}
-function refreshTPCard(){ refreshCard(metrics.findIndex(m=>m.id==='ticket')); }
-function refreshLeadsCard(){ refreshCard(metrics.findIndex(m=>m.id==='leads')); }
-
-// ─── financieras ──────────────────────────────────────────────────────────
-function finTotalObj(){ return financieras.reduce((s,f) => s + f.obj, 0); }
-function finTotalAct(){ return financieras.reduce((s,f) => s + f.actual, 0); }
-
-function renderFinancieras(){
-  const g = document.getElementById('fin-grid'); g.innerHTML = '';
-  financieras.forEach((f,i)=>{
-    const div = document.createElement('div'); div.className = 'fin-item';
-    div.innerHTML = `<div class="fin-name">${f.nombre}</div>
-      <div class="fin-field"><div class="fin-field-label">Solicitudes</div><input type="number" value="${f.obj}" min="0" step="1" oninput="updateFin(${i},'obj',this.value)" /></div>
-      <div class="fin-field"><div class="fin-field-label">Colocación</div><input type="number" value="${f.actual}" min="0" step="1" oninput="updateFin(${i},'actual',this.value)" /></div>
-      <div class="fin-field"><div class="fin-field-label">Rechazo</div><input type="number" value="${f.rechazo}" min="0" step="1" oninput="updateFin(${i},'rechazo',this.value)" /></div>`;
-    g.appendChild(div);
-  });
-  updateFinTotals();
-}
-
-function updateFin(i, field, v){
-  financieras[i][field] = parseInt(v) || 0;
-  updateFinTotals();
-  updateGaugeFinancieras();
-}
-
-function updateFinTotals(){
-  const totalObj = finTotalObj();
-  const totalAct = finTotalAct();
-  const p = pct(totalAct, totalObj);
-  document.getElementById('fin-actual-total').textContent = totalAct;
-  document.getElementById('fin-obj-total').textContent = totalObj;
-  const pctEl = document.getElementById('fin-pct-total');
-  pctEl.textContent = p+'%';
-  pctEl.className = 'fin-total-val '+cCls(p);
-  const bar = document.getElementById('fin-bar');
-  bar.style.width = p+'%';
-  bar.className = 'vbar-fill '+barCls(p);
-}
-
-// ─── gauge financieras (solo el de la sección) ────────────────────────────
-function updateGaugeFinancieras(){
-  // solo actualiza la barra de financieras, que ya se actualiza en updateFinTotals
-  // pero llamamos de nuevo por si acaso
-  updateFinTotals();
-}
-
-// ─── tráfico ──────────────────────────────────────────────────────────────
-function renderTraffic(){
-  const b = document.getElementById('tbody'); b.innerHTML = '';
-  traffic.forEach((row,i)=>{
-    const cv = row.visitas > 0 ? Math.round((row.leads / row.visitas) * 100) : 0;
+  state.traffic.forEach((t, i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="font-weight:500;color:var(--vtext);">${row.fuente}</td>
-      <td><input type="number" value="${row.visitas}" min="0" onchange="updT(${i},'visitas',this.value)" /></td>
-      <td><input type="number" value="${row.leads}" min="0" onchange="updT(${i},'leads',this.value)" /></td>
-      <td><span class="badge ${bCls(cv)}" id="cv-${i}">${cv}%</span></td>`;
-    b.appendChild(tr);
+    tr.innerHTML = `
+      <td><span class="source-tag">${t.fuente}</span></td>
+      <td>
+        <div class="stepper-wrap">
+          <button class="stepper-btn" onclick="stepTraffic(${i}, 'visitas', -1)">−</button>
+          <input type="number" class="stepper-input" id="inp-tr-visitas-${i}" min="0" value="${t.visitas}" oninput="onTrafficInput(${i}, 'visitas', this.value)">
+          <button class="stepper-btn" onclick="stepTraffic(${i}, 'visitas', 1)">+</button>
+        </div>
+      </td>
+      <td>
+        <div class="stepper-wrap">
+          <button class="stepper-btn" onclick="stepTraffic(${i}, 'leads', -1)">−</button>
+          <input type="number" class="stepper-input" id="inp-tr-leads-${i}" min="0" value="${t.leads}" oninput="onTrafficInput(${i}, 'leads', this.value)">
+          <button class="stepper-btn" onclick="stepTraffic(${i}, 'leads', 1)">+</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
   });
-  updateTrafficTotalsUI();
-  calcLeads();
-  refreshLeadsCard();
-  updateTrafficMeta();
 }
 
-function updT(i, f, v){
-  traffic[i][f] = parseInt(v) || 0;
-  const cv = traffic[i].visitas > 0 ? Math.round((traffic[i].leads / traffic[i].visitas) * 100) : 0;
-  const el = document.getElementById('cv-'+i);
-  if(el){ el.textContent = cv+'%'; el.className = 'badge '+bCls(cv); }
-  updateTrafficTotalsUI();
-  calcLeads();
-  refreshLeadsCard();
-  updateTrafficMeta();
+function syncInputsWithState() {
+  document.getElementById('agency-select').value = state.agency;
+  document.getElementById('hdr-agency-name').textContent = state.agency;
+  document.getElementById('sc-agency-title').textContent = state.agency;
+
+  document.getElementById('inp-ventas-act').value = state.ventas.act || '';
+  document.getElementById('inp-ventas-obj').value = state.ventas.obj || '';
+  document.getElementById('inp-unidades-act').value = state.unidades.act;
+  document.getElementById('inp-unidades-obj').value = state.unidades.obj;
+
+  document.getElementById('inp-mtd-ventas-act').value = state.mtd.ventasAct || '';
+  document.getElementById('inp-mtd-ventas-obj').value = state.mtd.ventasObj || '';
+  document.getElementById('inp-mtd-unidades-act').value = state.mtd.unidadesAct || '';
+  document.getElementById('inp-mtd-unidades-obj').value = state.mtd.unidadesObj || '';
+
+  // Financieras
+  const fVC = state.financieras.find(f => f.id === 'vc');
+  if (fVC) {
+    document.getElementById('fin-vc-sol').value = fVC.sol;
+    document.getElementById('fin-vc-act').value = fVC.col;
+    document.getElementById('fin-vc-rec').value = fVC.rec;
+  }
+  const fMK = state.financieras.find(f => f.id === 'mk');
+  if (fMK) {
+    document.getElementById('fin-mk-sol').value = fMK.sol;
+    document.getElementById('fin-mk-act').value = fMK.col;
+    document.getElementById('fin-mk-rec').value = fMK.rec;
+  }
+  const fFG = state.financieras.find(f => f.id === 'fg');
+  if (fFG) {
+    document.getElementById('fin-fg-sol').value = fFG.sol;
+    document.getElementById('fin-fg-act').value = fFG.col;
+    document.getElementById('fin-fg-rec').value = fFG.rec;
+  }
+
+  // Comentarios
+  const commBox = document.getElementById('inp-comentarios');
+  commBox.value = state.comentarios || '';
+  document.getElementById('capture-char-count').textContent = `${commBox.value.length} / 250`;
 }
 
-function updateTrafficTotalsUI(){
-  const { totalVisitas, totalLeads } = calcTrafficTotals();
-  document.getElementById('tfoot-visitas').textContent = totalVisitas;
-  document.getElementById('tfoot-leads').textContent = totalLeads;
-  const conv = totalVisitas > 0 ? Math.round((totalLeads / totalVisitas) * 100) : 0;
-  document.getElementById('tfoot-conv').textContent = conv + '%';
+// ═════════════════════════════════════════════════════════════════════════════
+// EVENTOS DE CAMBIO
+// ═════════════════════════════════════════════════════════════════════════════
+function onAgencyChange(val) {
+  state.agency = val;
+  document.getElementById('hdr-agency-name').textContent = val;
+  document.getElementById('sc-agency-title').textContent = val;
+  saveToStorage();
 }
 
-// ─── comentarios ──────────────────────────────────────────────────────────
-function updateCharCount(){
-  const txt = document.getElementById('comentarios-txt');
-  document.getElementById('char-count').textContent = txt.value.length + ' / 200';
+function stepVal(id, delta) {
+  const el = document.getElementById(id);
+  let val = parseInt(el.value, 10) || 0;
+  val = Math.max(0, val + delta);
+  el.value = val;
+  onDataChange();
 }
 
-// ─── screenshot ───────────────────────────────────────────────────────────
-function showToast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
-function takeScreenshot(){
-  const btn = document.getElementById('btn-cap'); btn.classList.add('loading'); btn.textContent = 'Capturando...';
-  setTimeout(()=>{
-    html2canvas(document.getElementById('dashboard'), {backgroundColor:'#f5f5f3', scale:2, useCORS:true, logging:false}).then(canvas=>{
-      const agency = document.getElementById('agency-sel').value.replace(/\s+/g,'_');
-      const fecha = new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');
+function stepTraffic(index, field, delta) {
+  let val = state.traffic[index][field] + delta;
+  val = Math.max(0, val);
+  state.traffic[index][field] = val;
+  document.getElementById(`inp-tr-${field}-${index}`).value = val;
+  onDataChange();
+}
+
+function onTrafficInput(index, field, val) {
+  state.traffic[index][field] = Math.max(0, parseInt(val, 10) || 0);
+  onDataChange();
+}
+
+function onCommentChange(val) {
+  state.comentarios = val;
+  document.getElementById('capture-char-count').textContent = `${val.length} / 250`;
+  saveToStorage();
+}
+
+function onDataChange() {
+  // Extraer valores de los inputs
+  state.ventas.act = parseFloat(document.getElementById('inp-ventas-act').value) || 0;
+  state.ventas.obj = parseFloat(document.getElementById('inp-ventas-obj').value) || 0;
+  state.unidades.act = parseInt(document.getElementById('inp-unidades-act').value, 10) || 0;
+  state.unidades.obj = parseInt(document.getElementById('inp-unidades-obj').value, 10) || 0;
+
+  state.mtd.ventasAct = parseFloat(document.getElementById('inp-mtd-ventas-act').value) || 0;
+  state.mtd.ventasObj = parseFloat(document.getElementById('inp-mtd-ventas-obj').value) || 0;
+  state.mtd.unidadesAct = parseInt(document.getElementById('inp-mtd-unidades-act').value, 10) || 0;
+  state.mtd.unidadesObj = parseInt(document.getElementById('inp-mtd-unidades-obj').value, 10) || 0;
+
+  // Financieras
+  state.financieras[0].sol = parseInt(document.getElementById('fin-vc-sol').value, 10) || 0;
+  state.financieras[0].col = parseInt(document.getElementById('fin-vc-act').value, 10) || 0;
+  state.financieras[0].rec = parseInt(document.getElementById('fin-vc-rec').value, 10) || 0;
+
+  state.financieras[1].sol = parseInt(document.getElementById('fin-mk-sol').value, 10) || 0;
+  state.financieras[1].col = parseInt(document.getElementById('fin-mk-act').value, 10) || 0;
+  state.financieras[1].rec = parseInt(document.getElementById('fin-mk-rec').value, 10) || 0;
+
+  state.financieras[2].sol = parseInt(document.getElementById('fin-fg-sol').value, 10) || 0;
+  state.financieras[2].col = parseInt(document.getElementById('fin-fg-act').value, 10) || 0;
+  state.financieras[2].rec = parseInt(document.getElementById('fin-fg-rec').value, 10) || 0;
+
+  saveToStorage();
+  updateCalculations();
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// CÁLCULOS & ACTUALIZACIÓN DE SCORECARD EJECUTIVO
+// ═════════════════════════════════════════════════════════════════════════════
+function fmtCur(v) {
+  return '$' + Number(v).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtInt(v) {
+  return Number(v).toLocaleString('es-MX');
+}
+function calcPct(act, obj) {
+  if (!obj || obj <= 0) return 0;
+  return Math.round((act / obj) * 100);
+}
+function getSemPillClass(p) {
+  if (p >= 80) return 'pill-ok';
+  if (p >= 50) return 'pill-warn';
+  return 'pill-bad';
+}
+function getBarClass(p) {
+  if (p >= 80) return 'bar-ok';
+  if (p >= 50) return 'bar-warn';
+  return 'bar-bad';
+}
+
+function updateCalculations() {
+  // 1. Total Leads y Visitas
+  const totVisitas = state.traffic.reduce((sum, r) => sum + r.visitas, 0);
+  const totLeads = state.traffic.reduce((sum, r) => sum + r.leads, 0);
+
+  // 2. Ticket Promedio
+  const ticketAct = state.unidades.act > 0 ? (state.ventas.act / state.unidades.act) : 0;
+  const pctVentas = calcPct(state.ventas.act, state.ventas.obj);
+  const pctUnidades = calcPct(state.unidades.act, state.unidades.obj);
+  const pctTicket = calcPct(ticketAct, TP_REF);
+  const pctLeads = calcPct(totLeads, 12);
+
+  // --- Actualizar Scorecard Ejecutivo: MTD Banner ---
+  document.getElementById('sc-mtd-ventas').textContent = fmtCur(state.mtd.ventasAct);
+  document.getElementById('sc-mtd-obj').textContent = fmtCur(state.mtd.ventasObj);
+  const pctMTD = calcPct(state.mtd.ventasAct, state.mtd.ventasObj);
+  document.getElementById('sc-mtd-pct').textContent = `${pctMTD}%`;
+  document.getElementById('sc-mtd-unidades').textContent = `${state.mtd.unidadesAct} / ${state.mtd.unidadesObj}`;
+
+  // --- Actualizar Scorecard Ejecutivo: 4 KPIs ---
+  // Ventas
+  document.getElementById('sc-ventas-act').textContent = fmtCur(state.ventas.act);
+  document.getElementById('sc-ventas-obj').textContent = fmtCur(state.ventas.obj);
+  document.getElementById('pct-ventas').textContent = `${pctVentas}%`;
+  document.getElementById('pill-ventas').textContent = `${pctVentas}%`;
+  document.getElementById('pill-ventas').className = `pill ${getSemPillClass(pctVentas)}`;
+  document.getElementById('bar-ventas').style.width = `${Math.min(pctVentas, 100)}%`;
+  document.getElementById('bar-ventas').className = `bar-fill ${getBarClass(pctVentas)}`;
+  document.getElementById('diff-ventas').textContent = state.ventas.act >= state.ventas.obj ? '✓ Cumplida' : `Falta: ${fmtCur(state.ventas.obj - state.ventas.act)}`;
+
+  // Unidades
+  document.getElementById('sc-unidades-act').textContent = fmtInt(state.unidades.act);
+  document.getElementById('sc-unidades-obj').textContent = fmtInt(state.unidades.obj);
+  document.getElementById('pct-unidades').textContent = `${pctUnidades}%`;
+  document.getElementById('pill-unidades').textContent = `${pctUnidades}%`;
+  document.getElementById('pill-unidades').className = `pill ${getSemPillClass(pctUnidades)}`;
+  document.getElementById('bar-unidades').style.width = `${Math.min(pctUnidades, 100)}%`;
+  document.getElementById('bar-unidades').className = `bar-fill ${getBarClass(pctUnidades)}`;
+  document.getElementById('diff-unidades').textContent = state.unidades.act >= state.unidades.obj ? '✓ Cumplida' : `Faltan: ${state.unidades.obj - state.unidades.act}`;
+
+  // Ticket Promedio
+  document.getElementById('sc-ticket-act').textContent = fmtCur(ticketAct);
+  document.getElementById('pct-ticket').textContent = `${pctTicket}%`;
+  document.getElementById('bar-ticket').style.width = `${Math.min(pctTicket, 100)}%`;
+  document.getElementById('bar-ticket').className = `bar-fill ${getBarClass(pctTicket)}`;
+
+  // Leads
+  document.getElementById('sc-leads-act').textContent = fmtInt(totLeads);
+  document.getElementById('pct-leads').textContent = `${pctLeads}%`;
+  document.getElementById('pill-leads').textContent = `${pctLeads}%`;
+  document.getElementById('pill-leads').className = `pill ${getSemPillClass(pctLeads)}`;
+  document.getElementById('bar-leads').style.width = `${Math.min(pctLeads, 100)}%`;
+  document.getElementById('bar-leads').className = `bar-fill ${getBarClass(pctLeads)}`;
+  document.getElementById('diff-leads').textContent = totLeads >= 12 ? '✓ Meta alcanzada' : `Faltan: ${12 - totLeads}`;
+
+  // --- Actualizar Financieras Grid ---
+  renderExecFinancieras();
+
+  // --- Actualizar Tabla de Tráfico ---
+  renderExecTrafficTable(totVisitas, totLeads);
+
+  // --- Actualizar Comentarios ---
+  document.getElementById('sc-comments-text').textContent = state.comentarios && state.comentarios.trim().length > 0
+    ? state.comentarios
+    : 'Sin observaciones adicionales registradas para este turno.';
+}
+
+function renderExecFinancieras() {
+  const container = document.getElementById('sc-fin-grid');
+  container.innerHTML = '';
+
+  let totSol = 0;
+  let totCol = 0;
+  let totRec = 0;
+
+  state.financieras.forEach(f => {
+    totSol += f.sol;
+    totCol += f.col;
+    totRec += f.rec;
+
+    const bateo = f.sol > 0 ? Math.round((f.col / f.sol) * 100) : 0;
+    const block = document.createElement('div');
+    block.className = 'fin-block';
+    block.innerHTML = `
+      <div class="fin-block-header">
+        <span class="fin-name">${f.nombre}</span>
+        <span class="pill ${getSemPillClass(bateo)}">${bateo}% Bateo</span>
+      </div>
+      <div class="fin-stats-row">
+        <div class="fin-stat-item">
+          <div class="fin-stat-val">${f.sol}</div>
+          <div class="fin-stat-label">Solicitudes</div>
+        </div>
+        <div class="fin-stat-item">
+          <div class="fin-stat-val" style="color:var(--ok-text);">${f.col}</div>
+          <div class="fin-stat-label">Colocadas</div>
+        </div>
+        <div class="fin-stat-item">
+          <div class="fin-stat-val" style="color:var(--bad-text);">${f.rec}</div>
+          <div class="fin-stat-label">Rechazos</div>
+        </div>
+      </div>
+    `;
+    container.appendChild(block);
+  });
+
+  const bateoGlobal = totSol > 0 ? Math.round((totCol / totSol) * 100) : 0;
+  const penetracion = state.unidades.act > 0 ? Math.round((totCol / state.unidades.act) * 100) : 0;
+
+  document.getElementById('sc-fin-tot-sol').textContent = totSol;
+  document.getElementById('sc-fin-tot-col').textContent = totCol;
+  document.getElementById('sc-fin-tot-rec').textContent = totRec;
+  document.getElementById('sc-fin-tot-bateo').textContent = `${bateoGlobal}%`;
+  document.getElementById('sc-fin-penetracion').textContent = `${penetracion}%`;
+}
+
+function renderExecTrafficTable(totVisitas, totLeads) {
+  const tbody = document.getElementById('sc-traffic-tbody');
+  tbody.innerHTML = '';
+
+  state.traffic.forEach(t => {
+    const conv = t.visitas > 0 ? Math.round((t.leads / t.visitas) * 100) : 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight:600; color:var(--v-slate-800);">${t.fuente}</td>
+      <td style="text-align:center;">${t.visitas}</td>
+      <td style="text-align:center; font-weight:700;">${t.leads}</td>
+      <td style="text-align:right;">
+        <span class="pill ${getSemPillClass(conv)}">${conv}%</span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('sc-tot-visitas').textContent = totVisitas;
+  document.getElementById('sc-tot-leads').textContent = totLeads;
+  const totConv = totVisitas > 0 ? Math.round((totLeads / totVisitas) * 100) : 0;
+  document.getElementById('sc-tot-conv').textContent = `${totConv}%`;
+
+  // Metas de piso pills
+  document.getElementById('sc-meta-interac').textContent = `${totVisitas} / 60`;
+  const vOk = totVisitas >= 60;
+  const pInterac = document.getElementById('pill-meta-interac');
+  pInterac.textContent = vOk ? '✓ Cumplida' : 'Faltan ' + (60 - totVisitas);
+  pInterac.className = `pill ${vOk ? 'pill-ok' : 'pill-bad'}`;
+
+  document.getElementById('sc-meta-leads-num').textContent = `${totLeads} / 12`;
+  const lOk = totLeads >= 12;
+  const pLeads = document.getElementById('pill-meta-leads');
+  pLeads.textContent = lOk ? '✓ Cumplida' : 'Faltan ' + (12 - totLeads);
+  pLeads.className = `pill ${lOk ? 'pill-ok' : 'pill-bad'}`;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// EXPORTACIÓN MULTI-CANAL
+// ═════════════════════════════════════════════════════════════════════════════
+function generateWhatsAppText() {
+  const totVisitas = state.traffic.reduce((sum, r) => sum + r.visitas, 0);
+  const totLeads = state.traffic.reduce((sum, r) => sum + r.leads, 0);
+  const ticketAct = state.unidades.act > 0 ? (state.ventas.act / state.unidades.act) : 0;
+  const pctVentas = calcPct(state.ventas.act, state.ventas.obj);
+  const pctUnidades = calcPct(state.unidades.act, state.unidades.obj);
+
+  let totFinSol = 0, totFinCol = 0, totFinRec = 0;
+  state.financieras.forEach(f => { totFinSol += f.sol; totFinCol += f.col; totFinRec += f.rec; });
+  const bateoGlobal = totFinSol > 0 ? Math.round((totFinCol / totFinSol) * 100) : 0;
+  const penetracion = state.unidades.act > 0 ? Math.round((totFinCol / state.unidades.act) * 100) : 0;
+
+  const d = new Date();
+  const fechaStr = d.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  const semVentas = pctVentas >= 80 ? '🟢' : pctVentas >= 50 ? '🟡' : '🔴';
+  const semUnidades = pctUnidades >= 80 ? '🟢' : pctUnidades >= 50 ? '🟡' : '🔴';
+
+  let msg = `🏁 *VENTO · TABLERO DE CONTROL DIARIO*\n`;
+  msg += `📍 *Agencia:* ${state.agency}\n`;
+  msg += `📅 *Fecha:* ${fechaStr}\n\n`;
+
+  msg += `💰 *VENTAS & UNIDADES (DIARIO)*\n`;
+  msg += `• *Ventas:* ${fmtCur(state.ventas.act)} / Meta: ${fmtCur(state.ventas.obj)} (${pctVentas}% ${semVentas})\n`;
+  msg += `• *Motos:* ${state.unidades.act} / Meta: ${state.unidades.obj} (${pctUnidades}% ${semUnidades})\n`;
+  msg += `• *Ticket Promedio:* ${fmtCur(ticketAct)} (Ref: $28,000)\n\n`;
+
+  if (state.mtd.ventasObj > 0) {
+    const pctMTD = calcPct(state.mtd.ventasAct, state.mtd.ventasObj);
+    msg += `📈 *ACUMULADO MES (MTD)*\n`;
+    msg += `• Venta Mes: ${fmtCur(state.mtd.ventasAct)} / Meta: ${fmtCur(state.mtd.ventasObj)} (${pctMTD}%)\n`;
+    msg += `• Motos Mes: ${state.mtd.unidadesAct} / Meta: ${state.mtd.unidadesObj}\n\n`;
+  }
+
+  msg += `🏦 *FINANCIERAS (Bateo & Colocación)*\n`;
+  state.financieras.forEach(f => {
+    const bat = f.sol > 0 ? Math.round((f.col / f.sol) * 100) : 0;
+    msg += `• ${f.nombre}: ${f.col} colocada(s) · ${f.sol} sol. (${bat}% bateo)\n`;
+  });
+  msg += `👉 *Total Colocadas:* ${totFinCol} / ${totFinSol} solicitudes (${bateoGlobal}% bateo)\n`;
+  msg += `👉 *Penetración Crédito:* ${penetracion}% de las unidades vendidas\n\n`;
+
+  msg += `🚦 *TRÁFICO & EMBUDO*\n`;
+  state.traffic.forEach(t => {
+    const c = t.visitas > 0 ? Math.round((t.leads / t.visitas) * 100) : 0;
+    msg += `• ${t.fuente}: ${t.visitas} visitas → ${t.leads} leads (${c}%)\n`;
+  });
+  msg += `👉 *Total Tráfico:* ${totVisitas} / Meta 60 ${totVisitas >= 60 ? '🟢' : '🔴'}\n`;
+  msg += `👉 *Total Leads:* ${totLeads} / Meta 12 ${totLeads >= 12 ? '🟢' : '🔴'}\n\n`;
+
+  if (state.comentarios && state.comentarios.trim().length > 0) {
+    msg += `📝 *OBSERVACIONES:*\n${state.comentarios.trim()}\n`;
+  }
+
+  return msg;
+}
+
+function copyWhatsAppReport() {
+  const text = generateWhatsAppText();
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('✓ Resumen copiado para WhatsApp listo para pegar');
+  }).catch(() => {
+    showToast('Error al copiar al portapapeles');
+  });
+}
+
+function nativeShareScorecard() {
+  if (navigator.share) {
+    navigator.share({
+      title: `Scorecard Vento - ${state.agency}`,
+      text: generateWhatsAppText()
+    }).catch(err => console.log('Share error:', err));
+  } else {
+    copyWhatsAppReport();
+  }
+}
+
+function downloadScorecardPNG() {
+  const btn = document.getElementById('btn-download-img');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = 'Generando Imagen...';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
+
+  // Aseguramos que la vista activa sea el scorecard
+  switchView('scorecard');
+
+  setTimeout(() => {
+    const target = document.getElementById('executive-scorecard');
+    html2canvas(target, {
+      scale: 2, // Calidad retina 2x nítida para pantallas móviles
+      backgroundColor: '#FFFFFF',
+      useCORS: true,
+      logging: false
+    }).then(canvas => {
+      const cleanAgency = state.agency.replace(/[^a-zA-Z0-9]/g, '_');
+      const d = new Date();
+      const fechaStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      
       const link = document.createElement('a');
-      link.download = `Tablero_Vento_${agency}_${fecha}.png`; link.href = canvas.toDataURL('image/png'); link.click();
-      btn.classList.remove('loading');
-      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Capturar`;
-      showToast('✓ Imagen guardada');
-    }).catch(()=>{ btn.classList.remove('loading'); btn.innerHTML = 'Capturar'; });
-  },100);
+      link.download = `Scorecard_Vento_${cleanAgency}_${fechaStr}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      btn.innerHTML = originalText;
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = 'auto';
+      showToast('✓ Imagen PNG descargada en alta resolución');
+    }).catch(err => {
+      console.error(err);
+      btn.innerHTML = originalText;
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = 'auto';
+      showToast('Error al generar la imagen');
+    });
+  }, 200);
 }
 
-// ─── inicialización ──────────────────────────────────────────────────────
-renderMetrics();
-renderFinancieras();
-renderTraffic();
-updateGaugeFinancieras();
-updateTrafficMeta();
+// ═════════════════════════════════════════════════════════════════════════════
+// PERSISTENCIA LOCAL STORAGE
+// ═════════════════════════════════════════════════════════════════════════════
+function saveToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn('LocalStorage error:', e);
+  }
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = Object.assign(state, parsed);
+    }
+  } catch (e) {
+    console.warn('LocalStorage load error:', e);
+  }
+}
+
+function resetDailyData() {
+  if (!confirm('¿Deseas reiniciar los números del día de hoy? (La agencia y metas mensuales se conservarán)')) {
+    return;
+  }
+  state.ventas.act = 0;
+  state.unidades.act = 0;
+  state.financieras.forEach(f => { f.sol = 0; f.col = 0; f.rec = 0; });
+  state.traffic.forEach(t => { t.visitas = 0; t.leads = 0; });
+  state.comentarios = '';
+
+  saveToStorage();
+  syncInputsWithState();
+  renderCaptureTrafficTable();
+  updateCalculations();
+  showToast('✓ Datos diarios reiniciados para nuevo turno');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('app-toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
 </script>
 </body>
 </html>
